@@ -79,8 +79,12 @@ const App: React.FC = () => {
         <aside className="hidden md:flex flex-col w-64 bg-white border-r border-sky-100 h-screen fixed left-0 top-0 z-20 shadow-sm">
           <div className="p-6 text-center">
             <div className="flex flex-col items-center gap-3 mb-6">
-              <div className="w-24 h-24 bg-orange-50 rounded-full p-2 flex items-center justify-center">
-                <img src="./logo.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md" />
+              <div className="w-24 h-24 p-2 flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/logo.png" 
+                  alt="Logo" 
+                  className="w-full h-full object-contain drop-shadow-sm" 
+                />
               </div>
               <h1 className="text-sm font-black text-orange-600 leading-tight uppercase tracking-tighter">
                 Hipotiroidismo<br/>Consciente
@@ -119,7 +123,11 @@ const App: React.FC = () => {
         {/* Header (Mobile) */}
         <header className="md:hidden bg-white/80 backdrop-blur-md px-4 py-3 border-b border-sky-100 flex justify-between items-center sticky top-0 z-40">
            <div className="flex items-center gap-2">
-             <img src="./logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+             <img 
+               src="/logo.png" 
+               alt="Logo" 
+               className="w-8 h-8 object-contain" 
+             />
              <h1 className="text-sm font-black text-orange-600 uppercase tracking-tighter">H. Consciente</h1>
            </div>
            <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xs shadow-sm">
