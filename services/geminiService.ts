@@ -2,7 +2,8 @@
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 import { SymptomEntry } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+// Always use the required initialization format with process.env.API_KEY.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export async function getPersonalizedTip(symptoms: SymptomEntry[]) {
   const recentSymptoms = symptoms.slice(0, 5).map(s => s.symptoms.join(', ')).join('; ');
@@ -34,7 +35,9 @@ export async function getPersonalizedTip(symptoms: SymptomEntry[]) {
       }
     });
 
-    return JSON.parse(response.text || '[]');
+    // Extract text directly using the .text property as per guidelines.
+    const responseText = response.text || '[]';
+    return JSON.parse(responseText);
   } catch (error) {
     console.error("Error fetching Gemini tips:", error);
     return [

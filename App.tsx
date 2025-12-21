@@ -17,9 +17,15 @@ import History from './components/History';
 import WeightAnalysis from './components/WeightAnalysis';
 import Tips from './components/Tips';
 import MedicalReport from './components/MedicalReport';
+import Welcome from './components/Welcome';
 import { UserProfile, SymptomEntry, WeightEntry } from './types';
 
 const App: React.FC = () => {
+  const [showWelcome, setShowWelcome] = useState<boolean>(() => {
+    const seen = localStorage.getItem('hc_welcome_seen');
+    return !seen;
+  });
+
   const [profile, setProfile] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('hc_profile');
     return saved ? JSON.parse(saved) : { name: 'Invitado', weight: 70, currentDose: 100 };
@@ -47,6 +53,11 @@ const App: React.FC = () => {
     localStorage.setItem('hc_weights', JSON.stringify(weightHistory));
   }, [profile, symptomHistory, weightHistory]);
 
+  const handleWelcomeComplete = () => {
+    localStorage.setItem('hc_welcome_seen', 'true');
+    setShowWelcome(false);
+  };
+
   const addSymptomEntry = (entry: Omit<SymptomEntry, 'id'>) => {
     setSymptomHistory(prev => [{ ...entry, id: Date.now().toString() }, ...prev]);
   };
@@ -57,16 +68,24 @@ const App: React.FC = () => {
     setWeightHistory(prev => [...prev, { date: today, weight: newWeight, dose: profile.currentDose }]);
   };
 
+  if (showWelcome) {
+    return <Welcome onComplete={handleWelcomeComplete} />;
+  }
+
   return (
     <Router>
-      <div className="flex flex-col min-h-screen bg-sky-50 pb-20 md:pb-0 md:pl-64">
+      <div className="flex flex-col min-h-screen bg-sky-50 pb-20 md:pb-0 md:pl-64 animate-in fade-in duration-500">
         {/* Desktop Sidebar */}
-        <aside className="hidden md:flex flex-col w-64 bg-white border-r border-sky-100 h-screen fixed left-0 top-0 z-20">
-          <div className="p-6">
-            <h1 className="text-xl font-bold text-orange-600 flex items-center gap-2">
-              <Pill className="w-6 h-6" />
-              Hipotiroidismo Consciente
-            </h1>
+        <aside className="hidden md:flex flex-col w-64 bg-white border-r border-sky-100 h-screen fixed left-0 top-0 z-20 shadow-sm">
+          <div className="p-6 text-center">
+            <div className="flex flex-col items-center gap-3 mb-6">
+              <div className="w-24 h-24 bg-orange-50 rounded-full p-2 flex items-center justify-center">
+                <img src="./logo.png" alt="Logo" className="w-full h-full object-contain drop-shadow-md" />
+              </div>
+              <h1 className="text-sm font-black text-orange-600 leading-tight uppercase tracking-tighter">
+                Hipotiroidismo<br/>Consciente
+              </h1>
+            </div>
           </div>
           <nav className="flex-1 px-4 space-y-1">
             <NavItem to="/" icon={<Home />} label="Ritual" />
@@ -75,21 +94,21 @@ const App: React.FC = () => {
             <NavItem to="/tips" icon={<Lightbulb />} label="Vida Consciente" />
             <NavItem to="/report" icon={<FileText />} label="Reporte Médico" />
           </nav>
-          <div className="p-4 border-t border-sky-100">
-            <div className="flex items-center gap-3 bg-sky-50 p-3 rounded-xl">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold">
+          <div className="p-4 border-t border-sky-100 bg-sky-50/50">
+            <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white transition-all cursor-pointer group shadow-sm">
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold group-hover:rotate-12 transition-transform">
                 {profile.name[0]}
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-semibold">{profile.name}</p>
-                <p className="text-xs text-slate-500">{profile.currentDose} mcg / día</p>
+              <div className="flex-1 overflow-hidden">
+                <p className="text-sm font-bold truncate">{profile.name}</p>
+                <p className="text-[10px] text-slate-500 uppercase font-bold">{profile.currentDose} mcg / día</p>
               </div>
             </div>
           </div>
         </aside>
 
         {/* Mobile Navbar (Bottom) */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-sky-100 flex justify-around py-3 px-2 z-50">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-sky-100 flex justify-around py-3 px-2 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
           <MobileNavItem to="/" icon={<Home />} />
           <MobileNavItem to="/history" icon={<Calendar />} />
           <MobileNavItem to="/analysis" icon={<ChartIcon />} />
@@ -98,9 +117,12 @@ const App: React.FC = () => {
         </nav>
 
         {/* Header (Mobile) */}
-        <header className="md:hidden bg-white px-4 py-4 border-b border-sky-100 flex justify-between items-center sticky top-0 z-40">
-           <h1 className="text-lg font-bold text-orange-600">Hipotiroidismo Consciente</h1>
-           <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xs">
+        <header className="md:hidden bg-white/80 backdrop-blur-md px-4 py-3 border-b border-sky-100 flex justify-between items-center sticky top-0 z-40">
+           <div className="flex items-center gap-2">
+             <img src="./logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+             <h1 className="text-sm font-black text-orange-600 uppercase tracking-tighter">H. Consciente</h1>
+           </div>
+           <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xs shadow-sm">
               {profile.name[0]}
            </div>
         </header>
@@ -124,13 +146,13 @@ const NavItem = ({ to, icon, label }: { to: string; icon: React.ReactNode; label
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-        isActive ? 'bg-orange-50 text-orange-600 font-semibold' : 'text-slate-600 hover:bg-sky-50'
+      `flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${
+        isActive ? 'bg-orange-500 text-white font-bold shadow-lg shadow-orange-500/20' : 'text-slate-600 hover:bg-sky-50'
       }`
     }
   >
-    {React.cloneElement(icon as React.ReactElement, { size: 20 })}
-    {label}
+    {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 18 })}
+    <span className="text-sm">{label}</span>
   </NavLink>
 );
 
@@ -138,12 +160,12 @@ const MobileNavItem = ({ to, icon }: { to: string; icon: React.ReactNode }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `p-2 rounded-xl transition-all ${
-        isActive ? 'text-orange-600 scale-110' : 'text-slate-400'
+      `p-3 rounded-2xl transition-all ${
+        isActive ? 'bg-orange-500 text-white scale-110 shadow-lg shadow-orange-500/20' : 'text-slate-400'
       }`
     }
   >
-    {React.cloneElement(icon as React.ReactElement, { size: 24 })}
+    {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 22 })}
   </NavLink>
 );
 
