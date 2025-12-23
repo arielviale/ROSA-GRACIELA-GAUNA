@@ -7,10 +7,13 @@ import {
   Calendar, 
   Lightbulb, 
   FileText, 
-  Settings,
+  User as UserIcon,
+  Settings as SettingsIcon,
   Pill,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  Zap,
+  Heart
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import History from './components/History';
@@ -18,7 +21,51 @@ import WeightAnalysis from './components/WeightAnalysis';
 import Tips from './components/Tips';
 import MedicalReport from './components/MedicalReport';
 import Welcome from './components/Welcome';
+import Settings from './components/Settings';
 import { UserProfile, SymptomEntry, WeightEntry } from './types';
+
+// Isotipo Vectorial Robusto - Soporta dimensiones explícitas para PDF
+export const AppLogo = ({ className = "w-12 h-12", width, height }: { className?: string; width?: number; height?: number }) => (
+  <svg 
+    viewBox="0 0 200 200" 
+    className={className} 
+    width={width}
+    height={height}
+    xmlns="http://www.w3.org/2000/svg"
+    role="img"
+    aria-label="Logo Hipotiroidismo Consciente"
+  >
+    <defs>
+      <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" style={{ stopColor: '#F97316', stopOpacity: 1 }} />
+        <stop offset="100%" style={{ stopColor: '#EA580C', stopOpacity: 1 }} />
+      </linearGradient>
+    </defs>
+    <circle cx="100" cy="100" r="95" fill="#FFF7ED" stroke="#FFEDD5" strokeWidth="2" />
+    <path 
+      d="M100,40 C135,40 160,65 160,100 C160,135 135,160 100,160 C65,160 40,135 40,100 C40,65 65,40 100,40 Z" 
+      fill="#FDBA74" 
+      opacity="0.2" 
+    />
+    <path 
+      d="M100,175 C60,175 30,140 30,100 C30,75 45,55 65,55 C85,55 100,75 100,100 L100,135" 
+      fill="none" 
+      stroke="#F97316" 
+      strokeWidth="14" 
+      strokeLinecap="round" 
+      opacity="0.4" 
+    />
+    <path 
+      d="M100,175 C140,175 170,140 170,100 C170,75 155,55 135,55 C115,55 100,75 100,100 L100,135" 
+      fill="none" 
+      stroke="url(#logoGrad)" 
+      strokeWidth="14" 
+      strokeLinecap="round" 
+    />
+    <circle cx="100" cy="100" r="18" fill="#F97316" />
+    <circle cx="100" cy="100" r="8" fill="#FFFFFF" />
+  </svg>
+);
 
 const App: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState<boolean>(() => {
@@ -28,7 +75,7 @@ const App: React.FC = () => {
 
   const [profile, setProfile] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('hc_profile');
-    return saved ? JSON.parse(saved) : { name: 'Invitado', weight: 70, currentDose: 100 };
+    return saved ? JSON.parse(saved) : { name: '', weight: 70, currentDose: 100 };
   });
 
   const [symptomHistory, setSymptomHistory] = useState<SymptomEntry[]>(() => {
@@ -38,13 +85,7 @@ const App: React.FC = () => {
 
   const [weightHistory, setWeightHistory] = useState<WeightEntry[]>(() => {
     const saved = localStorage.getItem('hc_weights');
-    return saved ? JSON.parse(saved) : [
-      { date: '2024-05-01', weight: 72, dose: 100 },
-      { date: '2024-05-08', weight: 71.5, dose: 100 },
-      { date: '2024-05-15', weight: 71, dose: 100 },
-      { date: '2024-05-22', weight: 70.8, dose: 100 },
-      { date: '2024-05-29', weight: profile.weight, dose: profile.currentDose },
-    ];
+    return saved ? JSON.parse(saved) : [];
   });
 
   useEffect(() => {
@@ -53,7 +94,10 @@ const App: React.FC = () => {
     localStorage.setItem('hc_weights', JSON.stringify(weightHistory));
   }, [profile, symptomHistory, weightHistory]);
 
-  const handleWelcomeComplete = () => {
+  const handleWelcomeComplete = (initialProfile: UserProfile) => {
+    setProfile(initialProfile);
+    const today = new Date().toISOString().split('T')[0];
+    setWeightHistory([{ date: today, weight: initialProfile.weight, dose: initialProfile.currentDose }]);
     localStorage.setItem('hc_welcome_seen', 'true');
     setShowWelcome(false);
   };
@@ -68,81 +112,84 @@ const App: React.FC = () => {
     setWeightHistory(prev => [...prev, { date: today, weight: newWeight, dose: profile.currentDose }]);
   };
 
+  const updateProfile = (updatedProfile: UserProfile) => {
+    setProfile(updatedProfile);
+  };
+
   if (showWelcome) {
     return <Welcome onComplete={handleWelcomeComplete} />;
   }
 
   return (
     <Router>
-      <div className="flex flex-col min-h-screen bg-sky-50 pb-20 md:pb-0 md:pl-64 animate-in fade-in duration-500">
+      <div className="flex flex-col min-h-screen bg-sky-50 pb-20 md:pb-0 md:pl-64 animate-in fade-in duration-500 font-['Outfit']">
         {/* Desktop Sidebar */}
         <aside className="hidden md:flex flex-col w-64 bg-white border-r border-sky-100 h-screen fixed left-0 top-0 z-20 shadow-sm">
-          <div className="p-6 text-center">
-            <div className="flex flex-col items-center gap-3 mb-6">
-              <div className="w-24 h-24 p-2 flex items-center justify-center overflow-hidden">
-                <img 
-                  src="/logo.png" 
-                  alt="Logo" 
-                  className="w-full h-full object-contain drop-shadow-sm" 
-                />
+          <div className="p-8 text-center">
+            <div className="flex flex-col items-center gap-4 mb-8">
+              <div className="p-1 bg-orange-50 rounded-3xl shadow-sm border border-orange-100/50">
+                <AppLogo className="w-16 h-16" />
               </div>
-              <h1 className="text-sm font-black text-orange-600 leading-tight uppercase tracking-tighter">
-                Hipotiroidismo<br/>Consciente
-              </h1>
+              <div className="space-y-0.5">
+                <h1 className="text-sm font-black text-orange-600 uppercase tracking-tighter leading-none">
+                  Hipotiroidismo
+                </h1>
+                <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                  Consciente
+                </h2>
+              </div>
             </div>
           </div>
-          <nav className="flex-1 px-4 space-y-1">
+          <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
             <NavItem to="/" icon={<Home />} label="Ritual" />
             <NavItem to="/history" icon={<Calendar />} label="Diario" />
             <NavItem to="/analysis" icon={<ChartIcon />} label="Peso y Dosis" />
             <NavItem to="/tips" icon={<Lightbulb />} label="Vida Consciente" />
             <NavItem to="/report" icon={<FileText />} label="Reporte Médico" />
+            <NavItem to="/settings" icon={<UserIcon />} label="Mi Perfil" />
           </nav>
-          <div className="p-4 border-t border-sky-100 bg-sky-50/50">
-            <div className="flex items-center gap-3 p-3 rounded-2xl hover:bg-white transition-all cursor-pointer group shadow-sm">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold group-hover:rotate-12 transition-transform">
-                {profile.name[0]}
+          <div className="p-4 mt-auto border-t border-sky-100 bg-sky-50/50">
+            <NavLink to="/settings" className="flex items-center gap-3 p-3 rounded-2xl bg-white shadow-sm border border-sky-100 hover:border-orange-200 transition-colors group">
+              <div className="w-10 h-10 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold shadow-md group-hover:scale-110 transition-transform">
+                {profile.name[0] || '?'}
               </div>
-              <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-bold truncate">{profile.name}</p>
-                <p className="text-[10px] text-slate-500 uppercase font-bold">{profile.currentDose} mcg / día</p>
+              <div className="flex-1 overflow-hidden text-left">
+                <p className="text-sm font-bold truncate">{profile.name || 'Usuario'}</p>
+                <p className="text-[10px] text-slate-500 uppercase font-black tracking-widest">{profile.currentDose} MCG</p>
               </div>
-            </div>
+            </NavLink>
           </div>
         </aside>
 
         {/* Mobile Navbar (Bottom) */}
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-sky-100 flex justify-around py-3 px-2 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-sky-100 flex justify-around py-3 px-2 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.08)]">
           <MobileNavItem to="/" icon={<Home />} />
           <MobileNavItem to="/history" icon={<Calendar />} />
           <MobileNavItem to="/analysis" icon={<ChartIcon />} />
-          <MobileNavItem to="/tips" icon={<Lightbulb />} />
           <MobileNavItem to="/report" icon={<FileText />} />
+          <MobileNavItem to="/settings" icon={<UserIcon />} />
         </nav>
 
         {/* Header (Mobile) */}
-        <header className="md:hidden bg-white/80 backdrop-blur-md px-4 py-3 border-b border-sky-100 flex justify-between items-center sticky top-0 z-40">
-           <div className="flex items-center gap-2">
-             <img 
-               src="/logo.png" 
-               alt="Logo" 
-               className="w-8 h-8 object-contain" 
-             />
-             <h1 className="text-sm font-black text-orange-600 uppercase tracking-tighter">H. Consciente</h1>
+        <header className="md:hidden bg-white/80 backdrop-blur-md px-5 py-4 border-b border-sky-100 flex justify-between items-center sticky top-0 z-40">
+           <div className="flex items-center gap-3">
+             <AppLogo className="w-10 h-10" />
+             <h1 className="text-sm font-black text-orange-600 uppercase tracking-tighter leading-none">H. Consciente</h1>
            </div>
-           <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-xs shadow-sm">
-              {profile.name[0]}
-           </div>
+           <NavLink to="/settings" className="w-9 h-9 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-xs shadow-md">
+              {profile.name[0] || '?'}
+           </NavLink>
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 md:p-8 max-w-5xl mx-auto w-full">
+        <main className="flex-1 p-4 md:p-10 max-w-5xl mx-auto w-full">
           <Routes>
             <Route path="/" element={<Dashboard profile={profile} onSymptomAdd={addSymptomEntry} />} />
             <Route path="/history" element={<History symptoms={symptomHistory} />} />
             <Route path="/analysis" element={<WeightAnalysis weightHistory={weightHistory} currentProfile={profile} onUpdateWeight={updateWeight} />} />
             <Route path="/tips" element={<Tips symptoms={symptomHistory} />} />
             <Route path="/report" element={<MedicalReport profile={profile} symptoms={symptomHistory} weights={weightHistory} />} />
+            <Route path="/settings" element={<Settings profile={profile} onUpdate={updateProfile} />} />
           </Routes>
         </main>
       </div>
@@ -154,13 +201,15 @@ const NavItem = ({ to, icon, label }: { to: string; icon: React.ReactNode; label
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${
-        isActive ? 'bg-orange-500 text-white font-bold shadow-lg shadow-orange-500/20' : 'text-slate-600 hover:bg-sky-50'
+      `flex items-center gap-3 px-5 py-4 rounded-2xl transition-all duration-300 ${
+        isActive 
+          ? 'bg-orange-500 text-white font-bold shadow-xl shadow-orange-500/25 scale-[1.02]' 
+          : 'text-slate-500 hover:bg-sky-50'
       }`
     }
   >
-    {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 18 })}
-    <span className="text-sm">{label}</span>
+    {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 20 })}
+    <span className="text-sm tracking-tight">{label}</span>
   </NavLink>
 );
 
@@ -168,12 +217,12 @@ const MobileNavItem = ({ to, icon }: { to: string; icon: React.ReactNode }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
-      `p-3 rounded-2xl transition-all ${
+      `p-4 rounded-2xl transition-all duration-300 ${
         isActive ? 'bg-orange-500 text-white scale-110 shadow-lg shadow-orange-500/20' : 'text-slate-400'
       }`
     }
   >
-    {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 22 })}
+    {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 24 })}
   </NavLink>
 );
 

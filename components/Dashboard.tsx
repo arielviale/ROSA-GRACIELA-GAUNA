@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect, useRef } from 'react';
-import { Pill, Coffee, CheckCircle2, AlertCircle, ChevronRight, Plus } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Pill, Coffee, CheckCircle2, AlertCircle, ChevronRight, Plus, Pencil } from 'lucide-react';
 import { UserProfile, RitualState, SymptomEntry } from '../types';
 import { BREAKFAST_WAIT_MINUTES, SYMPTOMS_LIST } from '../constants';
 
@@ -14,6 +14,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onSymptomAdd }) => {
   const [timeLeft, setTimeLeft] = useState(BREAKFAST_WAIT_MINUTES * 60);
   const [isQuickLogOpen, setIsQuickLogOpen] = useState(false);
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
+  const [otherSymptom, setOtherSymptom] = useState('');
   const [ritualStartTime, setRitualStartTime] = useState<number | null>(null);
 
   useEffect(() => {
@@ -50,13 +51,20 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onSymptomAdd }) => {
   };
 
   const submitSymptoms = () => {
-    if (selectedSymptoms.length > 0) {
+    const finalSymptoms = [...selectedSymptoms].filter(s => s !== 'Otro');
+    
+    if (selectedSymptoms.includes('Otro') && otherSymptom.trim()) {
+      finalSymptoms.push(otherSymptom.trim());
+    }
+
+    if (finalSymptoms.length > 0) {
       onSymptomAdd({
         date: new Date().toISOString().split('T')[0],
-        symptoms: selectedSymptoms,
+        symptoms: finalSymptoms,
         notes: ''
       });
       setSelectedSymptoms([]);
+      setOtherSymptom('');
       setIsQuickLogOpen(false);
     }
   };
@@ -151,16 +159,16 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onSymptomAdd }) => {
       {/* Quick Log Modal Overlay */}
       {isQuickLogOpen && (
         <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-lg rounded-[2rem] p-6 shadow-2xl animate-in slide-in-from-bottom-8 duration-500">
+          <div className="bg-white w-full max-w-lg rounded-[2rem] p-6 shadow-2xl animate-in slide-in-from-bottom-8 duration-500 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold">¿Algún síntoma hoy?</h3>
-              <button onClick={() => setIsQuickLogOpen(false)} className="text-slate-400 hover:text-slate-600">
+              <button onClick={() => { setIsQuickLogOpen(false); setOtherSymptom(''); }} className="text-slate-400 hover:text-slate-600">
                 Cerrar
               </button>
             </div>
             
-            <div className="grid grid-cols-2 gap-3 mb-8">
-              {SYMPTOMS_LIST.map(s => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+              {[...SYMPTOMS_LIST, "Otro"].map(s => (
                 <button
                   key={s}
                   onClick={() => handleSymptomToggle(s)}
@@ -169,15 +177,31 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onSymptomAdd }) => {
                       ? 'border-orange-500 bg-orange-50 text-orange-700' 
                       : 'border-slate-100 bg-slate-50 text-slate-600'}`}
                 >
-                  <div className={`w-3 h-3 rounded-full ${selectedSymptoms.includes(s) ? 'bg-orange-500' : 'bg-slate-300'}`} />
-                  {s}
+                  <div className={`w-3 h-3 rounded-full shrink-0 ${selectedSymptoms.includes(s) ? 'bg-orange-500' : 'bg-slate-300'}`} />
+                  <span className="truncate">{s}</span>
                 </button>
               ))}
             </div>
 
+            {selectedSymptoms.includes('Otro') && (
+              <div className="mb-8 space-y-2 animate-in zoom-in-95 duration-200">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                  <Pencil size={12} /> Describir síntoma
+                </label>
+                <input
+                  type="text"
+                  placeholder="Escribe aquí brevemente..."
+                  value={otherSymptom}
+                  onChange={(e) => setOtherSymptom(e.target.value.slice(0, 100))}
+                  className="w-full bg-slate-50 border-2 border-orange-100 focus:border-orange-500 focus:bg-white px-4 py-3 rounded-xl outline-none transition-all font-medium text-slate-800"
+                  autoFocus
+                />
+              </div>
+            )}
+
             <button 
               onClick={submitSymptoms}
-              disabled={selectedSymptoms.length === 0}
+              disabled={selectedSymptoms.length === 0 || (selectedSymptoms.includes('Otro') && !otherSymptom.trim())}
               className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2"
             >
               Guardar Registro

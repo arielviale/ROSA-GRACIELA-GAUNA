@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Lightbulb, Apple, Brain, Info, Sparkles, RefreshCw } from 'lucide-react';
+import { Lightbulb, Apple, Brain, Info, Sparkles, RefreshCw, AlertCircle } from 'lucide-react';
 import { getPersonalizedTip } from '../services/geminiService';
 import { SymptomEntry, Tip } from '../types';
 
@@ -11,12 +11,20 @@ interface TipsProps {
 const Tips: React.FC<TipsProps> = ({ symptoms }) => {
   const [tips, setTips] = useState<Tip[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const fetchTips = async () => {
     setLoading(true);
-    const data = await getPersonalizedTip(symptoms);
-    setTips(data);
-    setLoading(false);
+    setError(false);
+    try {
+      const data = await getPersonalizedTip(symptoms);
+      setTips(data);
+    } catch (err) {
+      setError(true);
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -46,36 +54,40 @@ const Tips: React.FC<TipsProps> = ({ symptoms }) => {
       <section className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold text-slate-900">Vida Consciente</h2>
-          <p className="text-slate-500 text-sm">Consejos personalizados impulsados por IA</p>
+          <p className="text-slate-500 text-sm italic">Sintonía diaria con tu bienestar</p>
         </div>
         <button 
           onClick={fetchTips}
-          className="p-2 text-sky-600 hover:bg-sky-100 rounded-full transition-colors"
-          title="Actualizar consejos"
+          disabled={loading}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sky-600 font-bold transition-all hover:bg-sky-100 active:scale-95 ${loading ? 'opacity-50' : ''}`}
         >
-          <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
+          <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
+          <span className="hidden md:inline">Actualizar</span>
         </button>
       </section>
 
       {loading ? (
         <div className="grid gap-4">
-          {[1,2,3].map(i => (
-            <div key={i} className="h-24 bg-white rounded-3xl animate-pulse border border-sky-100" />
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-32 bg-white rounded-[2rem] animate-pulse border border-sky-100" />
           ))}
         </div>
       ) : (
         <div className="grid gap-4">
           {tips.map((tip, idx) => (
-            <div key={idx} className={`p-6 rounded-[2rem] border-2 transition-all hover:scale-[1.01] ${getBg(tip.category)}`}>
-              <div className="flex items-start gap-4">
-                <div className="bg-white p-3 rounded-2xl shadow-sm">
+            <div 
+              key={idx} 
+              className={`group p-6 rounded-[2.2rem] border-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${getBg(tip.category)}`}
+            >
+              <div className="flex items-start gap-5">
+                <div className="bg-white p-4 rounded-2xl shadow-sm transition-transform group-hover:rotate-6">
                   {getIcon(tip.category)}
                 </div>
-                <div className="flex-1">
-                  <span className="text-xs font-bold uppercase tracking-widest opacity-60 block mb-1">
+                <div className="flex-1 space-y-1">
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
                     {tip.category}
                   </span>
-                  <p className="text-slate-800 font-medium leading-relaxed">
+                  <p className="text-slate-800 font-bold leading-relaxed text-lg">
                     {tip.content}
                   </p>
                 </div>
@@ -85,16 +97,23 @@ const Tips: React.FC<TipsProps> = ({ symptoms }) => {
         </div>
       )}
 
-      <section className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden mt-8">
-        <Lightbulb className="absolute top-4 right-4 text-white opacity-10 w-24 h-24 rotate-12" />
-        <h3 className="text-xl font-bold mb-4">¿Por qué es importante?</h3>
-        <p className="text-slate-400 text-sm leading-relaxed mb-6">
-          El hipotiroidismo no solo se trata con medicación; el estilo de vida, la gestión del estrés y los micronutrientes como el selenio y el zinc juegan un papel crucial en la conversión de T4 a T3 activa.
+      <section className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden mt-8 shadow-2xl">
+        <div className="absolute -right-8 -bottom-8 w-48 h-48 bg-orange-500 rounded-full blur-[80px] opacity-20" />
+        <Lightbulb className="absolute top-6 right-6 text-orange-400 opacity-20 w-16 h-16 rotate-12" />
+        
+        <h3 className="text-xl font-black mb-4 flex items-center gap-2">
+          <Sparkles className="text-orange-400" size={20} />
+          ¿Por qué es importante?
+        </h3>
+        <p className="text-slate-400 text-sm leading-relaxed mb-6 max-w-lg">
+          Vivir con hipotiroidismo requiere un enfoque integral. Tu medicación es la base, pero el estilo de vida consciente potencia su eficacia. Pequeños ajustes en tu nutrición y manejo del estrés marcan la diferencia en cómo te sientes cada día.
         </p>
-        <div className="flex flex-wrap gap-3">
-          <span className="bg-white/10 px-3 py-1 rounded-full text-xs font-medium">#Absorcion</span>
-          <span className="bg-white/10 px-3 py-1 rounded-full text-xs font-medium">#T3Activa</span>
-          <span className="bg-white/10 px-3 py-1 rounded-full text-xs font-medium">#Energia</span>
+        <div className="flex flex-wrap gap-2">
+          {['#Absorción', '#T3Activa', '#RitualConsciente', '#Vitalidad'].map(tag => (
+            <span key={tag} className="bg-white/5 border border-white/10 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-slate-300">
+              {tag}
+            </span>
+          ))}
         </div>
       </section>
     </div>

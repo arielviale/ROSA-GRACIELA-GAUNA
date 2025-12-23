@@ -13,6 +13,9 @@ export const SYMPTOMS_LIST = [
   "Fatiga",
   "Estreñimiento",
   "Frío excesivo",
+  "Calor excesivo",
+  "Dolor de garganta al tragar",
+  "Dolor de cabeza",
   "Aumento de peso",
   "Bajo ánimo"
 ];
