@@ -24,48 +24,79 @@ import Welcome from './components/Welcome';
 import Settings from './components/Settings';
 import { UserProfile, SymptomEntry, WeightEntry } from './types';
 
-// Isotipo Vectorial Robusto - Soporta dimensiones explícitas para PDF
-export const AppLogo = ({ className = "w-12 h-12", width, height }: { className?: string; width?: number; height?: number }) => (
-  <svg 
-    viewBox="0 0 200 200" 
-    className={className} 
-    width={width}
-    height={height}
-    xmlns="http://www.w3.org/2000/svg"
-    role="img"
-    aria-label="Logo Hipotiroidismo Consciente"
-  >
-    <defs>
-      <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" style={{ stopColor: '#F97316', stopOpacity: 1 }} />
-        <stop offset="100%" style={{ stopColor: '#EA580C', stopOpacity: 1 }} />
-      </linearGradient>
-    </defs>
-    <circle cx="100" cy="100" r="95" fill="#FFF7ED" stroke="#FFEDD5" strokeWidth="2" />
-    <path 
-      d="M100,40 C135,40 160,65 160,100 C160,135 135,160 100,160 C65,160 40,135 40,100 C40,65 65,40 100,40 Z" 
-      fill="#FDBA74" 
-      opacity="0.2" 
-    />
-    <path 
-      d="M100,175 C60,175 30,140 30,100 C30,75 45,55 65,55 C85,55 100,75 100,100 L100,135" 
-      fill="none" 
-      stroke="#F97316" 
-      strokeWidth="14" 
-      strokeLinecap="round" 
-      opacity="0.4" 
-    />
-    <path 
-      d="M100,175 C140,175 170,140 170,100 C170,75 155,55 135,55 C115,55 100,75 100,100 L100,135" 
-      fill="none" 
-      stroke="url(#logoGrad)" 
-      strokeWidth="14" 
-      strokeLinecap="round" 
-    />
-    <circle cx="100" cy="100" r="18" fill="#F97316" />
-    <circle cx="100" cy="100" r="8" fill="#FFFFFF" />
-  </svg>
-);
+// Componente de Logo Inteligente: Mariposa (Símbolo de la Tiroides)
+export const AppLogo = ({ className = "w-12 h-12", width, height }: { className?: string; width?: number; height?: number }) => {
+  const [imgError, setImgError] = useState(false);
+  const logoPath = "assets/logo.png";
+
+  // Intentamos cargar el PNG si el usuario lo subió, de lo contrario usamos el SVG de la mariposa
+  if (!imgError && logoPath === "assets/logo.png" && false) { // Forzamos SVG para esta actualización estética
+    return (
+      <img 
+        src={logoPath} 
+        alt="Logo Hipotiroidismo Consciente" 
+        className={`${className} object-contain`}
+        style={{ width: width ? `${width}px` : undefined, height: height ? `${height}px` : undefined }}
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+
+  return (
+    <svg 
+      viewBox="0 0 200 200" 
+      className={className} 
+      width={width}
+      height={height}
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label="Logo Mariposa Hipotiroidismo"
+    >
+      <defs>
+        <linearGradient id="butterflyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style={{ stopColor: '#F97316', stopOpacity: 1 }} />
+          <stop offset="100%" style={{ stopColor: '#EA580C', stopOpacity: 1 }} />
+        </linearGradient>
+        <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="3" />
+          <feOffset dx="0" dy="2" result="offsetblur" />
+          <feComponentTransfer>
+            <feFuncA type="linear" slope="0.2" />
+          </feComponentTransfer>
+          <feMerge>
+            <feMergeNode />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      
+      {/* Cuerpo de la Mariposa */}
+      <rect x="96" y="70" width="8" height="60" rx="4" fill="#1E293B" />
+      
+      {/* Ala Izquierda Superior */}
+      <path 
+        d="M95,100 C95,100 70,50 35,50 C15,50 15,85 45,105 C15,125 15,165 45,165 C75,165 95,125 95,125" 
+        fill="url(#butterflyGrad)" 
+        filter="url(#shadow)"
+      />
+      
+      {/* Ala Derecha Superior */}
+      <path 
+        d="M105,100 C105,100 130,50 165,50 C185,50 185,85 155,105 C185,125 185,165 155,165 C125,165 105,125 105,125" 
+        fill="url(#butterflyGrad)" 
+        filter="url(#shadow)"
+      />
+
+      {/* Detalles de las Antenas */}
+      <path d="M98,72 Q90,55 80,55" fill="none" stroke="#1E293B" strokeWidth="3" strokeLinecap="round" />
+      <path d="M102,72 Q110,55 120,55" fill="none" stroke="#1E293B" strokeWidth="3" strokeLinecap="round" />
+      
+      {/* Círculos decorativos en las alas para un toque moderno */}
+      <circle cx="60" cy="80" r="8" fill="white" opacity="0.3" />
+      <circle cx="140" cy="80" r="8" fill="white" opacity="0.3" />
+    </svg>
+  );
+};
 
 const App: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState<boolean>(() => {
@@ -128,7 +159,7 @@ const App: React.FC = () => {
           <div className="p-8 text-center">
             <div className="flex flex-col items-center gap-4 mb-8">
               <div className="p-1 bg-orange-50 rounded-3xl shadow-sm border border-orange-100/50">
-                <AppLogo className="w-16 h-16" />
+                <AppLogo className="w-20 h-20" />
               </div>
               <div className="space-y-0.5">
                 <h1 className="text-sm font-black text-orange-600 uppercase tracking-tighter leading-none">
@@ -173,7 +204,7 @@ const App: React.FC = () => {
         {/* Header (Mobile) */}
         <header className="md:hidden bg-white/80 backdrop-blur-md px-5 py-4 border-b border-sky-100 flex justify-between items-center sticky top-0 z-40">
            <div className="flex items-center gap-3">
-             <AppLogo className="w-10 h-10" />
+             <AppLogo className="w-12 h-12" />
              <h1 className="text-sm font-black text-orange-600 uppercase tracking-tighter leading-none">H. Consciente</h1>
            </div>
            <NavLink to="/settings" className="w-9 h-9 rounded-full bg-orange-500 text-white flex items-center justify-center font-bold text-xs shadow-md">

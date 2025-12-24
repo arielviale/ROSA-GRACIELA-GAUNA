@@ -5,6 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hipotiroidismo Consciente</title>
+    <meta name="theme-color" content="#F97316" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="assets/logo.png" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -28,5 +31,22 @@
 </head>
   <body class="bg-sky-50 text-slate-800">
     <div id="root"></div>
+    <script>
+      // Registro simplificado y robusto del Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          // Usamos una ruta relativa simple. El navegador la resolverá automáticamente
+          // contra el origen del documento actual, evitando errores de construcción de URL manual.
+          navigator.serviceWorker.register('sw.js')
+            .then(reg => {
+              console.log('PWA Service Worker registrado con éxito en el ámbito:', reg.scope);
+            })
+            .catch(err => {
+              // Es normal que falle en previsualizaciones locales o entornos sin HTTPS/sandbox estricto
+              console.warn('El registro del Service Worker no pudo completarse:', err.message);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

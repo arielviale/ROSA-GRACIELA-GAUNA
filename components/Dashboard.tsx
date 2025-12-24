@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Pill, Coffee, CheckCircle2, AlertCircle, ChevronRight, Plus, Pencil } from 'lucide-react';
+import { Pill, Coffee, CheckCircle2, AlertCircle, ChevronRight, Plus, Pencil, X } from 'lucide-react';
 import { UserProfile, RitualState, SymptomEntry } from '../types';
 import { BREAKFAST_WAIT_MINUTES, SYMPTOMS_LIST } from '../constants';
 
@@ -53,6 +53,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onSymptomAdd }) => {
   const submitSymptoms = () => {
     const finalSymptoms = [...selectedSymptoms].filter(s => s !== 'Otro');
     
+    // Si se seleccionó "Otro", añadir el texto personalizado
     if (selectedSymptoms.includes('Otro') && otherSymptom.trim()) {
       finalSymptoms.push(otherSymptom.trim());
     }
@@ -100,12 +101,12 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onSymptomAdd }) => {
               <>
                 <Coffee size={40} className="mb-1 animate-bounce" />
                 <span className="text-4xl font-black mb-1">{formatTime(timeLeft)}</span>
-                <span className="text-xs font-semibold opacity-70">ESPERA PARA DESAYUNAR</span>
+                <span className="text-xs font-semibold opacity-70 uppercase tracking-widest">Espera...</span>
               </>
             ) : (
               <>
                 <CheckCircle2 size={48} className="mb-2" />
-                <span className="font-bold text-lg uppercase tracking-wider">¡Buen Provecho!</span>
+                <span className="font-bold text-lg uppercase tracking-wider">¡Listo!</span>
               </>
             )}
           </div>
@@ -113,15 +114,15 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onSymptomAdd }) => {
 
         <div className="max-w-xs">
           {ritualState === RitualState.WAITING && (
-            <p className="text-slate-500 text-sm">Toma tu levotiroxina en ayunas con agua pura para una absorción perfecta.</p>
+            <p className="text-slate-500 text-sm">Toma tu levotiroxina en ayunas con agua pura.</p>
           )}
           {ritualState === RitualState.TAKEN && (
-            <p className="text-orange-600 font-medium text-sm">Tu cuerpo está absorbiendo la medicina. ¡Casi es hora de desayunar!</p>
+            <p className="text-orange-600 font-medium text-sm">Casi es hora de desayunar. Tu cuerpo está absorbiendo la medicina.</p>
           )}
           {ritualState === RitualState.READY_TO_EAT && (
             <div className="space-y-2">
               <p className="text-emerald-700 font-bold">¡Ritual completado!</p>
-              <p className="text-slate-500 text-sm">Han pasado {BREAKFAST_WAIT_MINUTES} minutos. Ya puedes disfrutar de tu desayuno consciente.</p>
+              <p className="text-slate-500 text-sm">Ya puedes disfrutar de tu desayuno consciente.</p>
             </div>
           )}
         </div>
@@ -139,7 +140,7 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onSymptomAdd }) => {
             </div>
             <div className="text-left">
               <h3 className="font-bold text-slate-900">Registrar Síntomas</h3>
-              <p className="text-xs text-yellow-800 opacity-70">¿Cómo te sientes en este momento?</p>
+              <p className="text-xs text-yellow-800 opacity-70">¿Cómo te sientes ahora?</p>
             </div>
           </div>
           <ChevronRight size={20} className="text-yellow-600 group-hover:translate-x-1 transition-transform" />
@@ -151,60 +152,70 @@ const Dashboard: React.FC<DashboardProps> = ({ profile, onSymptomAdd }) => {
           </div>
           <div className="text-left">
             <h3 className="font-bold text-slate-900">Tip de Hoy</h3>
-            <p className="text-xs text-slate-600">"Evita el café en los 30 min post-toma; bloquea la absorción."</p>
+            <p className="text-xs text-slate-600">"El café inhibe la absorción. Espera al menos 30 min."</p>
           </div>
         </div>
       </div>
 
-      {/* Quick Log Modal Overlay */}
+      {/* Quick Log Modal */}
       {isQuickLogOpen && (
-        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-lg rounded-[2rem] p-6 shadow-2xl animate-in slide-in-from-bottom-8 duration-500 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold">¿Algún síntoma hoy?</h3>
-              <button onClick={() => { setIsQuickLogOpen(false); setOtherSymptom(''); }} className="text-slate-400 hover:text-slate-600">
-                Cerrar
+        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-lg rounded-[2.5rem] p-8 shadow-2xl animate-in slide-in-from-bottom-8 duration-500 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-8">
+              <div>
+                <h3 className="text-2xl font-black text-slate-900">Registrar Síntomas</h3>
+                <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">Selecciona lo que sientas hoy</p>
+              </div>
+              <button 
+                onClick={() => { setIsQuickLogOpen(false); setOtherSymptom(''); setSelectedSymptoms([]); }} 
+                className="p-2 bg-slate-100 rounded-full text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X size={20} />
               </button>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
               {[...SYMPTOMS_LIST, "Otro"].map(s => (
                 <button
                   key={s}
                   onClick={() => handleSymptomToggle(s)}
-                  className={`p-3 text-sm rounded-2xl border transition-all text-left flex items-center gap-2
+                  className={`p-4 text-sm font-bold rounded-2xl border-2 transition-all text-left flex items-center gap-3
                     ${selectedSymptoms.includes(s) 
                       ? 'border-orange-500 bg-orange-50 text-orange-700' 
-                      : 'border-slate-100 bg-slate-50 text-slate-600'}`}
+                      : 'border-slate-50 bg-slate-50 text-slate-400'}`}
                 >
-                  <div className={`w-3 h-3 rounded-full shrink-0 ${selectedSymptoms.includes(s) ? 'bg-orange-500' : 'bg-slate-300'}`} />
+                  <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all
+                    ${selectedSymptoms.includes(s) ? 'border-orange-500 bg-orange-500' : 'border-slate-200 bg-white'}`}>
+                    {selectedSymptoms.includes(s) && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                  </div>
                   <span className="truncate">{s}</span>
                 </button>
               ))}
             </div>
 
             {selectedSymptoms.includes('Otro') && (
-              <div className="mb-8 space-y-2 animate-in zoom-in-95 duration-200">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-2">
-                  <Pencil size={12} /> Describir síntoma
+              <div className="mb-8 space-y-3 animate-in zoom-in-95 duration-200">
+                <label className="text-[10px] font-black text-orange-500 uppercase tracking-[0.2em] ml-2 flex items-center gap-2">
+                  <Pencil size={12} /> Describir síntoma personalizado
                 </label>
-                <input
-                  type="text"
-                  placeholder="Escribe aquí brevemente..."
+                <textarea
+                  placeholder="Escribe aquí brevemente cómo te sientes..."
                   value={otherSymptom}
-                  onChange={(e) => setOtherSymptom(e.target.value.slice(0, 100))}
-                  className="w-full bg-slate-50 border-2 border-orange-100 focus:border-orange-500 focus:bg-white px-4 py-3 rounded-xl outline-none transition-all font-medium text-slate-800"
+                  onChange={(e) => setOtherSymptom(e.target.value.slice(0, 140))}
+                  className="w-full bg-slate-50 border-2 border-slate-100 focus:border-orange-500 focus:bg-white px-5 py-4 rounded-2xl outline-none transition-all font-medium text-slate-800 placeholder:text-slate-300 resize-none h-24"
                   autoFocus
                 />
+                <p className="text-[10px] text-right text-slate-400 font-bold">{otherSymptom.length}/140</p>
               </div>
             )}
 
             <button 
               onClick={submitSymptoms}
               disabled={selectedSymptoms.length === 0 || (selectedSymptoms.includes('Otro') && !otherSymptom.trim())}
-              className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-500/20 transition-all flex items-center justify-center gap-2"
+              className="w-full bg-[#0F172A] hover:bg-orange-600 disabled:opacity-30 disabled:hover:bg-[#0F172A] text-white font-black py-5 rounded-[2rem] shadow-xl transition-all flex items-center justify-center gap-3 active:scale-95"
             >
-              Guardar Registro
+              <CheckCircle2 size={20} />
+              <span>Guardar Registro</span>
             </button>
           </div>
         </div>

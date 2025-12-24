@@ -96,7 +96,7 @@ const MedicalReport: React.FC<MedicalReportProps> = ({ profile, symptoms, weight
         <header className="flex flex-col md:flex-row justify-between items-start border-b-2 border-slate-50 pb-10 gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-               {/* Usamos dimensiones explícitas para el logo para asegurar su captura en el PDF */}
+               {/* El componente AppLogo ahora priorizará el PNG si existe */}
                <div className="p-2 bg-orange-50 rounded-2xl border border-orange-100 flex items-center justify-center">
                  <AppLogo width={60} height={60} className="w-14 h-14" />
                </div>
