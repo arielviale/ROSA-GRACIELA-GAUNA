@@ -2,7 +2,8 @@
 import React, { useRef, useState } from 'react';
 import { User, Info, Calendar, Shield, Loader2, Download } from 'lucide-react';
 import { UserProfile, SymptomEntry, WeightEntry } from '../types';
-import { AppLogo } from '../App';
+// Fix: Use ModernLogo instead of non-existent ButterflyLogo
+import { ModernLogo } from '../App';
 
 interface MedicalReportProps {
   profile: UserProfile;
@@ -53,7 +54,6 @@ const MedicalReport: React.FC<MedicalReportProps> = ({ profile, symptoms, weight
     }
   };
 
-  // Group symptoms by frequency
   const symptomFreq: Record<string, number> = {};
   symptoms.forEach(s => s.symptoms.forEach(symp => {
     symptomFreq[symp] = (symptomFreq[symp] || 0) + 1;
@@ -88,7 +88,6 @@ const MedicalReport: React.FC<MedicalReportProps> = ({ profile, symptoms, weight
         </button>
       </section>
 
-      {/* Report Canvas */}
       <div 
         ref={reportRef}
         className="bg-white rounded-[2.5rem] border border-sky-100 shadow-xl p-8 md:p-12 space-y-12 overflow-hidden"
@@ -96,9 +95,9 @@ const MedicalReport: React.FC<MedicalReportProps> = ({ profile, symptoms, weight
         <header className="flex flex-col md:flex-row justify-between items-start border-b-2 border-slate-50 pb-10 gap-8">
           <div className="space-y-4">
             <div className="flex items-center gap-4">
-               {/* El componente AppLogo ahora priorizará el PNG si existe */}
                <div className="p-2 bg-orange-50 rounded-2xl border border-orange-100 flex items-center justify-center">
-                 <AppLogo width={60} height={60} className="w-14 h-14" />
+                 {/* Fix: Replaced ButterflyLogo with ModernLogo */}
+                 <ModernLogo size={56} />
                </div>
                <div>
                  <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-none uppercase">Reporte de Evolución</h1>
@@ -138,8 +137,7 @@ const MedicalReport: React.FC<MedicalReportProps> = ({ profile, symptoms, weight
             <div className="bg-slate-50 rounded-3xl p-6 space-y-4 border border-slate-100">
               {topSymptoms.length > 0 ? (
                 <div className="space-y-3">
-                  {topSymptoms.map(([name, count]) => (
-                    <div key={name} className="flex justify-between items-center bg-white px-4 py-3 rounded-xl border border-slate-100">
+                  {topSymptoms.map(([name, count]) => (                    <div key={name} className="flex justify-between items-center bg-white px-4 py-3 rounded-xl border border-slate-100">
                       <span className="font-bold text-slate-700 text-sm">{name}</span>
                       <span className="text-[10px] font-black text-orange-500 bg-orange-50 px-3 py-1 rounded-full uppercase">
                         {count} {count === 1 ? 'vez' : 'veces'}

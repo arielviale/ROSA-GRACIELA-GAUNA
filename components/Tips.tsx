@@ -1,36 +1,36 @@
 
-import React, { useState, useEffect } from 'react';
-import { Lightbulb, Apple, Brain, Info, Sparkles, RefreshCw, AlertCircle } from 'lucide-react';
-import { getPersonalizedTip } from '../services/geminiService';
+import React from 'react';
+import { Lightbulb, Apple, Brain, Info, Sparkles, Heart, Coffee } from 'lucide-react';
 import { SymptomEntry, Tip } from '../types';
 
 interface TipsProps {
   symptoms: SymptomEntry[];
 }
 
-const Tips: React.FC<TipsProps> = ({ symptoms }) => {
-  const [tips, setTips] = useState<Tip[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+const STATIC_TIPS: Tip[] = [
+  { 
+    category: 'Alimentación', 
+    content: 'Prioriza alimentos ricos en selenio como las nueces de Brasil para apoyar la función tiroidea.', 
+    icon: 'apple' 
+  },
+  { 
+    category: 'Mente', 
+    content: 'El estrés bloquea la conversión de T4 a T3. Dedica 5 minutos a meditación consciente hoy.', 
+    icon: 'brain' 
+  },
+  { 
+    category: 'Información', 
+    content: 'Recuerda esperar al menos 30-60 minutos después de tu dosis para ingerir café o alimentos.', 
+    icon: 'info' 
+  },
+  {
+    category: 'Alimentación',
+    content: 'El exceso de soja cruda o crucíferas en grandes cantidades puede interferir con la absorción de yodo.',
+    icon: 'apple'
+  }
+];
 
-  const fetchTips = async () => {
-    setLoading(true);
-    setError(false);
-    try {
-      const data = await getPersonalizedTip(symptoms);
-      setTips(data);
-    } catch (err) {
-      setError(true);
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchTips();
-  }, []);
-
+const Tips: React.FC<TipsProps> = () => {
   const getIcon = (category: string) => {
     switch (category.toLowerCase()) {
       case 'alimentación': return <Apple className="text-emerald-500" />;
@@ -56,46 +56,33 @@ const Tips: React.FC<TipsProps> = ({ symptoms }) => {
           <h2 className="text-2xl font-bold text-slate-900">Vida Consciente</h2>
           <p className="text-slate-500 text-sm italic">Sintonía diaria con tu bienestar</p>
         </div>
-        <button 
-          onClick={fetchTips}
-          disabled={loading}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sky-600 font-bold transition-all hover:bg-sky-100 active:scale-95 ${loading ? 'opacity-50' : ''}`}
-        >
-          <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-          <span className="hidden md:inline">Actualizar</span>
-        </button>
+        <div className="bg-orange-100 p-2 rounded-xl">
+           <Heart size={20} className="text-orange-600" fill="currentColor" />
+        </div>
       </section>
 
-      {loading ? (
-        <div className="grid gap-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-32 bg-white rounded-[2rem] animate-pulse border border-sky-100" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid gap-4">
-          {tips.map((tip, idx) => (
-            <div 
-              key={idx} 
-              className={`group p-6 rounded-[2.2rem] border-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${getBg(tip.category)}`}
-            >
-              <div className="flex items-start gap-5">
-                <div className="bg-white p-4 rounded-2xl shadow-sm transition-transform group-hover:rotate-6">
-                  {getIcon(tip.category)}
-                </div>
-                <div className="flex-1 space-y-1">
-                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                    {tip.category}
-                  </span>
-                  <p className="text-slate-800 font-bold leading-relaxed text-lg">
-                    {tip.content}
-                  </p>
-                </div>
+      <div className="grid gap-4">
+        {STATIC_TIPS.map((tip, idx) => (
+          <div 
+            key={idx} 
+            className={`group p-6 rounded-[2.2rem] border-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 ${getBg(tip.category)}`}
+          >
+            <div className="flex items-start gap-5">
+              <div className="bg-white p-4 rounded-2xl shadow-sm transition-transform group-hover:rotate-6">
+                {getIcon(tip.category)}
+              </div>
+              <div className="flex-1 space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+                  {tip.category}
+                </span>
+                <p className="text-slate-800 font-bold leading-relaxed text-lg">
+                  {tip.content}
+                </p>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ))}
+      </div>
 
       <section className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden mt-8 shadow-2xl">
         <div className="absolute -right-8 -bottom-8 w-48 h-48 bg-orange-500 rounded-full blur-[80px] opacity-20" />

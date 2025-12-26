@@ -1,9 +1,9 @@
 
-const CACHE_NAME = 'hc-v2';
+const CACHE_NAME = 'hc-v6';
 const ASSETS = [
   './',
   'index.html',
-  'assets/logo.png',
+  'logo192.png',
   'manifest.json'
 ];
 
@@ -17,7 +17,7 @@ self.addEventListener('install', (e) => {
   self.skipWaiting();
 });
 
-// Activación: Limpieza de versiones antiguas para evitar conflictos
+// Activación: Limpieza de versiones antiguas
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -36,7 +36,6 @@ self.addEventListener('activate', (e) => {
 
 // Estrategia de red: Intentar red primero, caer a caché para offline
 self.addEventListener('fetch', (e) => {
-  // Solo interceptar peticiones del mismo origen para el caché local
   if (e.request.url.startsWith(self.location.origin)) {
     e.respondWith(
       fetch(e.request)
