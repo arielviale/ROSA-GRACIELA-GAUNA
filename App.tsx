@@ -8,7 +8,8 @@ import {
   Lightbulb, 
   FileText, 
   User as UserIcon,
-  Zap
+  Zap,
+  Download
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import History from './components/History';
@@ -19,9 +20,10 @@ import Welcome from './components/Welcome';
 import Settings from './components/Settings';
 import { UserProfile, SymptomEntry, WeightEntry, RitualState } from './types';
 
-export const ModernLogo: React.FC<{ className?: string; size?: number }> = ({ 
+export const ThyroidFriendLogo: React.FC<{ className?: string; size?: number; isRunning?: boolean }> = ({ 
   className = "", 
-  size = 40 
+  size = 100,
+  isRunning = false
 }) => (
   <svg 
     width={size} 
@@ -29,40 +31,77 @@ export const ModernLogo: React.FC<{ className?: string; size?: number }> = ({
     viewBox="0 0 100 100" 
     fill="none" 
     xmlns="http://www.w3.org/2000/svg" 
-    className={className}
+    className={`${className}`}
   >
-    <defs>
-      <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#FB923C" />
-        <stop offset="100%" stopColor="#F97316" />
-      </linearGradient>
-    </defs>
-    <circle cx="50" cy="40" r="15" fill="url(#logoGrad)" />
+    <style>
+      {`
+        @keyframes rainbow-glow {
+          0%, 100% { filter: drop-shadow(0 0 2px rgba(255,184,77,0.5)); }
+          50% { filter: drop-shadow(0 0 8px rgba(255,92,92,0.8)); }
+        }
+        @keyframes leg-run {
+          0%, 100% { transform: rotate(0deg); }
+          50% { transform: rotate(15deg) translateY(-2px); }
+        }
+        @keyframes flower-sway {
+          0%, 100% { transform: rotate(-5deg); }
+          50% { transform: rotate(5deg); }
+        }
+        .rainbow { animation: rainbow-glow 3s infinite ease-in-out; }
+        .leg { animation: ${isRunning ? 'leg-run 0.3s infinite ease-in-out' : 'none'}; transform-origin: top center; }
+        .flower { animation: flower-sway 2s infinite ease-in-out; transform-origin: bottom center; }
+      `}
+    </style>
+    
+    <circle cx="50" cy="50" r="47" fill="#FFFBF0" stroke="#1A1A1A" strokeWidth="3" />
+    
+    <g className="rainbow">
+      <path d="M22 58C22 35 34 22 50 22C66 22 78 35 78 58" stroke="#FF5C5C" strokeWidth="7" strokeLinecap="round" fill="none" />
+      <path d="M28 58C28 42 38 30 50 30C62 30 72 42 72 58" stroke="#FFB84D" strokeWidth="6" strokeLinecap="round" fill="none" />
+      <path d="M34 58C34 48 41 38 50 38C59 38 66 48 66 58" stroke="#4DB8FF" strokeWidth="5" strokeLinecap="round" fill="none" />
+    </g>
+    
+    <ellipse cx="50" cy="85" rx="20" ry="3" fill="#E5E5E5" />
+
+    <path className="leg" d="M42 78L38 86" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round" />
+    <path className="leg" style={{ animationDelay: '0.15s' }} d="M58 78L62 86" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round" />
+    
     <path 
-      d="M20 70C35 55 65 55 80 70" 
-      stroke="#F97316" 
-      strokeWidth="6" 
-      strokeLinecap="round" 
+      d="M32 75C24 75 18 65 22 48C26 30 44 34 50 44C56 34 74 30 78 48C82 65 76 75 68 75C60 75 56 68 50 68C44 68 40 75 32 75Z" 
+      fill="#FF7043" 
+      stroke="#1A1A1A" 
+      strokeWidth="2.5"
     />
-    <path 
-      d="M10 80C30 65 70 65 90 80" 
-      stroke="#F97316" 
-      strokeWidth="4" 
-      strokeLinecap="round" 
-      opacity="0.4"
-    />
-    <path 
-      d="M50 55V85" 
-      stroke="#F97316" 
-      strokeWidth="2" 
-      strokeDasharray="4 4" 
-      opacity="0.6"
-    />
+    
+    <circle cx="28" cy="55" r="2" fill="#E64A19" opacity="0.6" />
+    <circle cx="34" cy="62" r="1.5" fill="#E64A19" opacity="0.6" />
+    <circle cx="66" cy="62" r="2" fill="#E64A19" opacity="0.6" />
+    <circle cx="72" cy="55" r="1.5" fill="#E64A19" opacity="0.6" />
+
+    <path d="M42 52C42 52 43 50 45 50C47 50 48 52 48 52" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" />
+    <path d="M52 52C52 52 53 50 55 50C57 50 58 52 58 52" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" />
+    <path d="M45 58C45 58 50 64 55 58" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" fill="none" />
+    <path d="M46 59C46 59 50 64 54 59" fill="#1A1A1A" />
+    
+    <path d="M22 55L16 52" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" />
+    <path d="M78 55L84 52" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" />
+    
+    <g className="flower">
+      <path d="M18 85L18 75" stroke="#2D5A27" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="18" cy="72" r="5" fill="#4DB8FF" stroke="#1A1A1A" strokeWidth="1.5" />
+      <circle cx="18" cy="72" r="1.5" fill="#FFD54F" />
+    </g>
+    <g className="flower" style={{ animationDelay: '0.5s' }}>
+      <path d="M82 85L82 72" stroke="#2D5A27" strokeWidth="2" strokeLinecap="round" />
+      <circle cx="82" cy="68" r="6" fill="#FF5C5C" stroke="#1A1A1A" strokeWidth="1.5" />
+      <circle cx="82" cy="68" r="2" fill="#FFD54F" />
+    </g>
   </svg>
 );
 
 const App: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState<boolean>(() => !localStorage.getItem('hc_welcome_seen'));
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
   const [profile, setProfile] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('hc_profile');
@@ -97,6 +136,25 @@ const App: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState<number>(0);
 
   const alarmTriggeredRef = useRef(false);
+
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
+  }, []);
+
+  const handleInstallClick = () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted PWA installation');
+        }
+        setDeferredPrompt(null);
+      });
+    }
+  };
 
   const playAlarm = useCallback(() => {
     if (alarmTriggeredRef.current) return;
@@ -200,33 +258,42 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="flex flex-col min-h-screen bg-sky-50 pb-20 md:pb-0 md:pl-64 animate-in fade-in duration-500 font-['Outfit']">
-        <aside className="hidden md:flex flex-col w-64 bg-white border-r border-sky-100 h-screen fixed left-0 top-0 z-20 shadow-sm">
+      <div className="flex flex-col min-h-screen bg-[#FFFBF2] pb-20 md:pb-0 md:pl-64 animate-in fade-in duration-500 font-['Outfit']">
+        <aside className="hidden md:flex flex-col w-64 bg-white border-r border-[#1A1A1A]/10 h-screen fixed left-0 top-0 z-20 shadow-sm">
           <div className="p-8 text-center">
             <div className="flex flex-col items-center gap-4 mb-8">
-              <div className="p-2 bg-white rounded-3xl shadow-sm border border-slate-100 transform hover:scale-110 transition-transform">
-                <ModernLogo size={64} />
+              <div className="p-1 bg-white rounded-full shadow-lg border-2 border-[#1A1A1A] transform hover:scale-105 transition-transform duration-500 cursor-pointer">
+                <ThyroidFriendLogo size={80} isRunning={ritualState === RitualState.TAKEN} />
               </div>
               <div className="space-y-0.5">
-                <h1 className="text-sm font-black text-orange-600 uppercase tracking-tighter leading-none">Hipotiroidismo</h1>
-                <h2 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Consciente</h2>
+                <h1 className="text-[10px] font-black text-[#FF7043] uppercase tracking-tighter leading-none">Hipotiroidismo</h1>
+                <h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest text-center">Consciente</h2>
               </div>
             </div>
           </div>
           <nav className="flex-1 px-4 space-y-1 overflow-y-auto pb-4">
-            <NavItem to="/" icon={<Home />} label="Ritual" />
-            <NavItem to="/history" icon={<Calendar />} label="Diario" />
+            <NavItem to="/" icon={<Home />} label="Mi Ritual" />
+            <NavItem to="/history" icon={<Calendar />} label="Mi Diario" />
             <NavItem to="/analysis" icon={<ChartIcon />} label="Peso y Dosis" />
             <NavItem to="/tips" icon={<Lightbulb />} label="Vida Consciente" />
-            <NavItem to="/report" icon={<FileText />} label="Reporte Médico" />
+            <NavItem to="/report" icon={<FileText />} label="Mi Reporte" />
             <NavItem to="/settings" icon={<UserIcon />} label="Mi Perfil" />
           </nav>
           
+          {deferredPrompt && (
+            <button 
+              onClick={handleInstallClick}
+              className="mx-4 mb-4 flex items-center justify-center gap-2 p-3 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-orange-600 transition-all"
+            >
+              <Download size={14} /> Instalar App
+            </button>
+          )}
+
           {ritualState === RitualState.TAKEN && (
-            <div className="mx-4 mb-4 p-5 bg-orange-500 rounded-[2rem] text-white shadow-xl shadow-orange-500/20 animate-in zoom-in duration-500">
+            <div className="mx-4 mb-4 p-5 bg-[#FF7043] border-2 border-[#1A1A1A] rounded-[2rem] text-white shadow-xl animate-in zoom-in duration-500">
                <div className="flex items-center gap-3 mb-2">
                  <Zap size={14} className="animate-pulse" />
-                 <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Absorbiendo</p>
+                 <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Absorbiendo Energía</p>
                </div>
                <p className="text-3xl font-black tabular-nums">
                  {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
@@ -235,7 +302,7 @@ const App: React.FC = () => {
           )}
         </aside>
 
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-sky-100 flex justify-around py-3 px-2 z-50 shadow-[0_-10px_30px_rgba(0,0,0,0.08)]">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t-2 border-[#1A1A1A]/10 flex justify-around py-3 px-2 z-50">
           <MobileNavItem to="/" icon={<Home />} />
           <MobileNavItem to="/history" icon={<Calendar />} />
           <MobileNavItem to="/analysis" icon={<ChartIcon />} />
@@ -243,13 +310,13 @@ const App: React.FC = () => {
           <MobileNavItem to="/settings" icon={<UserIcon />} />
         </nav>
 
-        <header className="md:hidden bg-white/80 backdrop-blur-md px-5 py-4 border-b border-sky-100 flex justify-between items-center sticky top-0 z-40">
+        <header className="md:hidden bg-white/80 backdrop-blur-md px-5 py-4 border-b-2 border-[#1A1A1A]/10 flex justify-between items-center sticky top-0 z-40">
            <div className="flex items-center gap-3">
-             <ModernLogo size={32} />
-             <h1 className="text-sm font-black text-orange-600 uppercase tracking-tighter">H. Consciente</h1>
+             <ThyroidFriendLogo size={44} isRunning={ritualState === RitualState.TAKEN} />
+             <h1 className="text-xs font-black text-[#FF7043] uppercase tracking-tighter">H. Consciente</h1>
            </div>
            {ritualState === RitualState.TAKEN && (
-             <div className="bg-orange-500 text-white px-4 py-1.5 rounded-full text-sm font-black tabular-nums shadow-lg shadow-orange-500/20">
+             <div className="bg-[#FF7043] border-2 border-[#1A1A1A] text-white px-4 py-1.5 rounded-full text-sm font-black tabular-nums shadow-lg">
                {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
              </div>
            )}
@@ -271,14 +338,14 @@ const App: React.FC = () => {
 };
 
 const NavItem = ({ to, icon, label }: { to: string; icon: React.ReactNode; label: string }) => (
-  <NavLink to={to} className={({ isActive }) => `flex items-center gap-3 px-5 py-4 rounded-2xl transition-all duration-300 ${isActive ? 'bg-orange-500 text-white font-bold shadow-xl shadow-orange-500/25 scale-[1.02]' : 'text-slate-500 hover:bg-sky-50'}`}>
+  <NavLink to={to} className={({ isActive }) => `flex items-center gap-3 px-5 py-4 rounded-[1.5rem] transition-all duration-300 ${isActive ? 'bg-[#FF7043] border-2 border-[#1A1A1A] text-white font-bold shadow-lg scale-[1.02]' : 'text-slate-500 hover:bg-orange-50'}`}>
     {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 20 })}
     <span className="text-sm tracking-tight">{label}</span>
   </NavLink>
 );
 
 const MobileNavItem = ({ to, icon }: { to: string; icon: React.ReactNode }) => (
-  <NavLink to={to} className={({ isActive }) => `p-4 rounded-2xl transition-all duration-300 ${isActive ? 'bg-orange-500 text-white scale-110 shadow-lg shadow-orange-500/20' : 'text-slate-400'}`}>
+  <NavLink to={to} className={({ isActive }) => `p-4 rounded-[1.2rem] transition-all duration-300 ${isActive ? 'bg-[#FF7043] border-2 border-[#1A1A1A] text-white scale-110 shadow-lg' : 'text-slate-400'}`}>
     {React.cloneElement(icon as React.ReactElement<{ size?: number }>, { size: 24 })}
   </NavLink>
 );

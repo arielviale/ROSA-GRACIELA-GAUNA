@@ -2,8 +2,8 @@
 import React, { useRef, useState } from 'react';
 import { User, Info, Calendar, Shield, Loader2, Download } from 'lucide-react';
 import { UserProfile, SymptomEntry, WeightEntry } from '../types';
-// Fix: Use ModernLogo instead of non-existent ButterflyLogo
-import { ModernLogo } from '../App';
+// Fixed: Changed ButterflyLogo to ThyroidFriendLogo as ButterflyLogo does not exist in App.tsx
+import { ThyroidFriendLogo } from '../App';
 
 interface MedicalReportProps {
   profile: UserProfile;
@@ -96,8 +96,8 @@ const MedicalReport: React.FC<MedicalReportProps> = ({ profile, symptoms, weight
           <div className="space-y-4">
             <div className="flex items-center gap-4">
                <div className="p-2 bg-orange-50 rounded-2xl border border-orange-100 flex items-center justify-center">
-                 {/* Fix: Replaced ButterflyLogo with ModernLogo */}
-                 <ModernLogo size={56} />
+                 {/* Fixed: Changed ButterflyLogo to ThyroidFriendLogo */}
+                 <ThyroidFriendLogo size={56} />
                </div>
                <div>
                  <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-none uppercase">Reporte de Evolución</h1>
