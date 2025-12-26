@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-// Add Zap to the imports from lucide-react
-import { Pill, Coffee, CheckCircle2, AlertCircle, ChevronRight, Plus, X, RotateCcw, Send, Sparkles, Loader2, Bot, MessageSquare, Zap } from 'lucide-react';
+import { Pill, CheckCircle2, ChevronRight, Plus, X, RotateCcw, Send, Sparkles, Loader2, Bot, Zap, Smartphone } from 'lucide-react';
 import { UserProfile, RitualState, SymptomEntry } from '../types';
 import { SYMPTOMS_LIST } from '../constants';
 import { ThyroidFriendLogo } from '../App';
@@ -14,6 +13,8 @@ interface DashboardProps {
   timeLeft: number;
   onTakePill: (minutes: number) => void;
   onResetRitual: () => void;
+  deferredPrompt?: any;
+  onInstallRequest?: () => void;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ 
@@ -22,7 +23,9 @@ const Dashboard: React.FC<DashboardProps> = ({
   ritualState, 
   timeLeft, 
   onTakePill,
-  onResetRitual 
+  onResetRitual,
+  deferredPrompt,
+  onInstallRequest
 }) => {
   const [isQuickLogOpen, setIsQuickLogOpen] = useState(false);
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
@@ -95,6 +98,24 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      
+      {deferredPrompt && (
+        <div className="md:hidden bg-slate-900 text-white p-5 rounded-[2rem] border-2 border-[#1A1A1A] shadow-[6px_6px_0px_#FF7043] flex items-center justify-between gap-4 animate-in slide-in-from-top-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-white/10 rounded-2xl">
+              <Smartphone size={24} className="text-[#FFB84D]" />
+            </div>
+            <p className="text-sm font-black leading-tight">Instala la App para usarla sin internet.</p>
+          </div>
+          <button 
+            onClick={onInstallRequest}
+            className="bg-[#FF7043] text-white px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest border-2 border-[#1A1A1A]"
+          >
+            Instalar
+          </button>
+        </div>
+      )}
+
       {/* Mascot Section with Interaction */}
       <section className="flex flex-col md:flex-row items-center gap-6 bg-white p-8 rounded-[3rem] border-4 border-[#1A1A1A] shadow-[8px_8px_0px_#1A1A1A]">
         <div className="relative">
@@ -111,7 +132,6 @@ const Dashboard: React.FC<DashboardProps> = ({
               {mascotMessage}
             </p>
           </div>
-          {/* Mobile version of speech bubble */}
           <div className="md:hidden text-center">
              <p className="text-slate-900 font-black text-lg leading-tight italic">"{mascotMessage}"</p>
           </div>
@@ -226,7 +246,6 @@ const Dashboard: React.FC<DashboardProps> = ({
         )}
       </section>
 
-      {/* Grid of Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <button 
           onClick={() => setIsQuickLogOpen(true)}
@@ -255,7 +274,6 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
       </div>
 
-      {/* Quick Log Modal */}
       {isQuickLogOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1A1A1A]/60 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-lg rounded-[3.5rem] p-12 shadow-2xl max-h-[90vh] overflow-y-auto border-8 border-[#1A1A1A]">

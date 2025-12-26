@@ -3,10 +3,10 @@
   "name": "Hipotiroidismo Consciente",
   "short_name": "H. Consciente",
   "description": "Tu ritual diario para el manejo del hipotiroidismo y bienestar tiroideo.",
-  "start_url": "index.html",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#FAFAFA",
-  "theme_color": "#F97316",
+  "background_color": "#FFFBF2",
+  "theme_color": "#FF7043",
   "orientation": "portrait",
   "icons": [
     {

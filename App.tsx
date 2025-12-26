@@ -9,7 +9,8 @@ import {
   FileText, 
   User as UserIcon,
   Zap,
-  Download
+  Download,
+  Smartphone
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import History from './components/History';
@@ -52,40 +53,31 @@ export const ThyroidFriendLogo: React.FC<{ className?: string; size?: number; is
         .flower { animation: flower-sway 2s infinite ease-in-out; transform-origin: bottom center; }
       `}
     </style>
-    
     <circle cx="50" cy="50" r="47" fill="#FFFBF0" stroke="#1A1A1A" strokeWidth="3" />
-    
     <g className="rainbow">
       <path d="M22 58C22 35 34 22 50 22C66 22 78 35 78 58" stroke="#FF5C5C" strokeWidth="7" strokeLinecap="round" fill="none" />
       <path d="M28 58C28 42 38 30 50 30C62 30 72 42 72 58" stroke="#FFB84D" strokeWidth="6" strokeLinecap="round" fill="none" />
       <path d="M34 58C34 48 41 38 50 38C59 38 66 48 66 58" stroke="#4DB8FF" strokeWidth="5" strokeLinecap="round" fill="none" />
     </g>
-    
     <ellipse cx="50" cy="85" rx="20" ry="3" fill="#E5E5E5" />
-
     <path className="leg" d="M42 78L38 86" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round" />
     <path className="leg" style={{ animationDelay: '0.15s' }} d="M58 78L62 86" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round" />
-    
     <path 
       d="M32 75C24 75 18 65 22 48C26 30 44 34 50 44C56 34 74 30 78 48C82 65 76 75 68 75C60 75 56 68 50 68C44 68 40 75 32 75Z" 
       fill="#FF7043" 
       stroke="#1A1A1A" 
       strokeWidth="2.5"
     />
-    
     <circle cx="28" cy="55" r="2" fill="#E64A19" opacity="0.6" />
     <circle cx="34" cy="62" r="1.5" fill="#E64A19" opacity="0.6" />
     <circle cx="66" cy="62" r="2" fill="#E64A19" opacity="0.6" />
     <circle cx="72" cy="55" r="1.5" fill="#E64A19" opacity="0.6" />
-
     <path d="M42 52C42 52 43 50 45 50C47 50 48 52 48 52" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" />
     <path d="M52 52C52 52 53 50 55 50C57 50 58 52 58 52" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" />
     <path d="M45 58C45 58 50 64 55 58" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" fill="none" />
     <path d="M46 59C46 59 50 64 54 59" fill="#1A1A1A" />
-    
     <path d="M22 55L16 52" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" />
     <path d="M78 55L84 52" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round" />
-    
     <g className="flower">
       <path d="M18 85L18 75" stroke="#2D5A27" strokeWidth="2" strokeLinecap="round" />
       <circle cx="18" cy="72" r="5" fill="#4DB8FF" stroke="#1A1A1A" strokeWidth="1.5" />
@@ -134,26 +126,25 @@ const App: React.FC = () => {
   });
 
   const [timeLeft, setTimeLeft] = useState<number>(0);
-
   const alarmTriggeredRef = useRef(false);
 
   useEffect(() => {
-    window.addEventListener('beforeinstallprompt', (e) => {
+    const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
-    });
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
-  const handleInstallClick = () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult: any) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted PWA installation');
-        }
-        setDeferredPrompt(null);
-      });
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      console.log('App instalada');
     }
+    setDeferredPrompt(null);
   };
 
   const playAlarm = useCallback(() => {
@@ -281,12 +272,14 @@ const App: React.FC = () => {
           </nav>
           
           {deferredPrompt && (
-            <button 
-              onClick={handleInstallClick}
-              className="mx-4 mb-4 flex items-center justify-center gap-2 p-3 bg-slate-900 text-white rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-orange-600 transition-all"
-            >
-              <Download size={14} /> Instalar App
-            </button>
+            <div className="px-4 mb-4">
+              <button 
+                onClick={handleInstallClick}
+                className="w-full flex items-center justify-center gap-3 p-4 bg-slate-900 text-white rounded-[1.5rem] text-xs font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-[4px_4px_0px_#FF7043]"
+              >
+                <Smartphone size={16} /> Instalar App
+              </button>
+            </div>
           )}
 
           {ritualState === RitualState.TAKEN && (
@@ -324,7 +317,7 @@ const App: React.FC = () => {
 
         <main className="flex-1 p-4 md:p-10 max-w-5xl mx-auto w-full">
           <Routes>
-            <Route path="/" element={<Dashboard profile={profile} onSymptomAdd={addSymptomEntry} ritualState={ritualState} timeLeft={timeLeft} onTakePill={handleTakePill} onResetRitual={handleResetRitual} />} />
+            <Route path="/" element={<Dashboard profile={profile} onSymptomAdd={addSymptomEntry} ritualState={ritualState} timeLeft={timeLeft} onTakePill={handleTakePill} onResetRitual={handleResetRitual} deferredPrompt={deferredPrompt} onInstallRequest={handleInstallClick} />} />
             <Route path="/history" element={<History symptoms={symptomHistory} />} />
             <Route path="/analysis" element={<WeightAnalysis weightHistory={weightHistory} currentProfile={profile} onUpdateWeight={updateWeight} />} />
             <Route path="/tips" element={<Tips symptoms={symptomHistory} />} />
