@@ -9,8 +9,8 @@ import {
   FileText, 
   User as UserIcon,
   Zap,
-  Download,
-  Smartphone
+  Smartphone,
+  Download
 } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import History from './components/History';
@@ -94,6 +94,7 @@ export const ThyroidFriendLogo: React.FC<{ className?: string; size?: number; is
 const App: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState<boolean>(() => !localStorage.getItem('hc_welcome_seen'));
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState<boolean>(false);
   
   const [profile, setProfile] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('hc_profile');
@@ -129,11 +130,21 @@ const App: React.FC = () => {
   const alarmTriggeredRef = useRef(false);
 
   useEffect(() => {
+    // Detect if already installed or in standalone mode
+    if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
+      setIsInstalled(true);
+    }
+
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
     };
     window.addEventListener('beforeinstallprompt', handler);
+    window.addEventListener('appinstalled', () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+    });
+    
     return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
 
@@ -142,7 +153,7 @@ const App: React.FC = () => {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
     if (outcome === 'accepted') {
-      console.log('App instalada');
+      setIsInstalled(true);
     }
     setDeferredPrompt(null);
   };
@@ -271,7 +282,7 @@ const App: React.FC = () => {
             <NavItem to="/settings" icon={<UserIcon />} label="Mi Perfil" />
           </nav>
           
-          {deferredPrompt && (
+          {deferredPrompt && !isInstalled && (
             <div className="px-4 mb-4">
               <button 
                 onClick={handleInstallClick}
@@ -295,7 +306,7 @@ const App: React.FC = () => {
           )}
         </aside>
 
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t-2 border-[#1A1A1A]/10 flex justify-around py-3 px-2 z-50">
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t-2 border-[#1A1A1A]/10 flex justify-around py-3 px-2 z-50 pb-safe">
           <MobileNavItem to="/" icon={<Home />} />
           <MobileNavItem to="/history" icon={<Calendar />} />
           <MobileNavItem to="/analysis" icon={<ChartIcon />} />
@@ -303,7 +314,7 @@ const App: React.FC = () => {
           <MobileNavItem to="/settings" icon={<UserIcon />} />
         </nav>
 
-        <header className="md:hidden bg-white/80 backdrop-blur-md px-5 py-4 border-b-2 border-[#1A1A1A]/10 flex justify-between items-center sticky top-0 z-40">
+        <header className="md:hidden bg-white/80 backdrop-blur-md px-5 py-4 border-b-2 border-[#1A1A1A]/10 flex justify-between items-center sticky top-0 z-40 pt-safe">
            <div className="flex items-center gap-3">
              <ThyroidFriendLogo size={44} isRunning={ritualState === RitualState.TAKEN} />
              <h1 className="text-xs font-black text-[#FF7043] uppercase tracking-tighter">H. Consciente</h1>
@@ -317,10 +328,10 @@ const App: React.FC = () => {
 
         <main className="flex-1 p-4 md:p-10 max-w-5xl mx-auto w-full">
           <Routes>
-            <Route path="/" element={<Dashboard profile={profile} onSymptomAdd={addSymptomEntry} ritualState={ritualState} timeLeft={timeLeft} onTakePill={handleTakePill} onResetRitual={handleResetRitual} deferredPrompt={deferredPrompt} onInstallRequest={handleInstallClick} />} />
+            <Route path="/" element={<Dashboard profile={profile} onSymptomAdd={addSymptomEntry} ritualState={ritualState} timeLeft={timeLeft} onTakePill={handleTakePill} onResetRitual={handleResetRitual} deferredPrompt={deferredPrompt} onInstallRequest={handleInstallClick} isInstalled={isInstalled} />} />
             <Route path="/history" element={<History symptoms={symptomHistory} />} />
             <Route path="/analysis" element={<WeightAnalysis weightHistory={weightHistory} currentProfile={profile} onUpdateWeight={updateWeight} />} />
-            <Route path="/tips" element={<Tips symptoms={symptomHistory} />} />
+            <Route path="/tips" element={<Tips symptoms={symptomHistory} isInstalled={isInstalled} />} />
             <Route path="/report" element={<MedicalReport profile={profile} symptoms={symptomHistory} weights={weightHistory} />} />
             <Route path="/settings" element={<Settings profile={profile} onUpdate={updateProfile} />} />
           </Routes>

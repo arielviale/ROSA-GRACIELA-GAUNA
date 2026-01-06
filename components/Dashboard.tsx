@@ -15,6 +15,7 @@ interface DashboardProps {
   onResetRitual: () => void;
   deferredPrompt?: any;
   onInstallRequest?: () => void;
+  isInstalled?: boolean;
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ 
@@ -25,7 +26,8 @@ const Dashboard: React.FC<DashboardProps> = ({
   onTakePill,
   onResetRitual,
   deferredPrompt,
-  onInstallRequest
+  onInstallRequest,
+  isInstalled
 }) => {
   const [isQuickLogOpen, setIsQuickLogOpen] = useState(false);
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
@@ -99,7 +101,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
-      {deferredPrompt && (
+      {deferredPrompt && !isInstalled && (
         <div className="md:hidden bg-slate-900 text-white p-5 rounded-[2rem] border-2 border-[#1A1A1A] shadow-[6px_6px_0px_#FF7043] flex items-center justify-between gap-4 animate-in slide-in-from-top-4">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-white/10 rounded-2xl">
