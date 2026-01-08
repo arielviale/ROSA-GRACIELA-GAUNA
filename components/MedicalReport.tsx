@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import { User, Info, Calendar, Shield, Loader2, Download } from 'lucide-react';
 import { UserProfile, SymptomEntry, WeightEntry } from '../types';
 // Fixed: Changed ButterflyLogo to ThyroidFriendLogo as ButterflyLogo does not exist in App.tsx
-import { ThyroidFriendLogo } from '../App';
+import { ThyroidFriendLogo } from '../components/Logo';
 
 interface MedicalReportProps {
   profile: UserProfile;

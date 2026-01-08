@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Pill, CheckCircle2, ChevronRight, Plus, X, RotateCcw, Send, Sparkles, Loader2, Bot, Zap, Smartphone } from 'lucide-react';
 import { UserProfile, RitualState, SymptomEntry } from '../types';
 import { SYMPTOMS_LIST } from '../constants';
-import { ThyroidFriendLogo } from '../App';
+import { ThyroidFriendLogo } from '../components/Logo';
 import { getBreakfastRecommendation } from '../services/geminiService';
 
 interface DashboardProps {
