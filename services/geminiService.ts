@@ -12,7 +12,7 @@ export async function getPersonalizedTip(symptoms: SymptomEntry[]): Promise<Tip[
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-1.5-flash',
       contents: [{ parts: [{ text: prompt }] }],
       config: {
         responseMimeType: 'application/json',
@@ -53,7 +53,7 @@ export async function getBreakfastRecommendation(foodInput: string): Promise<{ m
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-1.5-flash',
       contents: [{ parts: [{ text: prompt }] }],
       config: {
         responseMimeType: 'application/json',
