@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, ShieldCheck, User, Scale, Pill, Heart, Sparkles } from 'lucide-react';
 import { UserProfile } from '../types';
-import { ThyroidFriendLogo } from '../components/Logo';
+import { ThyroidFriendLogo } from '../App';
 
 interface WelcomeProps {
   onComplete: (profile: UserProfile) => void;
