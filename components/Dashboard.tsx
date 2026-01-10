@@ -101,20 +101,30 @@ const Dashboard: React.FC<DashboardProps> = ({
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
 
-      {deferredPrompt && !isInstalled && (
-        <div className="md:hidden bg-slate-900 text-white p-4 rounded-[1.5rem] border-2 border-[#1A1A1A] shadow-[4px_4px_0px_#FF7043] flex items-center justify-between gap-3 animate-in slide-in-from-top-4">
+      {!isInstalled && (
+        <div className="bg-slate-900 text-white p-4 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border-2 border-[#1A1A1A] shadow-[6px_6px_0px_#FF7043] flex flex-col sm:flex-row items-center justify-between gap-4 animate-in slide-in-from-top-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-white/10 rounded-xl shrink-0">
-              <Smartphone size={20} className="text-[#FFB84D]" />
+            <div className="p-3 bg-white/10 rounded-xl shrink-0">
+              <Smartphone size={24} className="text-[#FFB84D]" />
             </div>
-            <p className="text-[13px] font-black leading-tight">Instala para usar offline.</p>
+            <div>
+              <p className="text-sm md:text-base font-black leading-tight">Usa "Hipotiroidismo Consciente" como una App</p>
+              <p className="text-[10px] md:text-xs text-slate-400 font-bold mt-1 uppercase tracking-widest">Funciona sin internet y es más rápido</p>
+            </div>
           </div>
-          <button
-            onClick={onInstallRequest}
-            className="bg-[#FF7043] text-white px-4 py-2 rounded-lg font-black text-[10px] uppercase tracking-widest border-2 border-[#1A1A1A] shrink-0"
-          >
-            Instalar
-          </button>
+
+          {deferredPrompt ? (
+            <button
+              onClick={onInstallRequest}
+              className="w-full sm:w-auto bg-[#FF7043] text-white px-6 py-3 rounded-xl font-black text-xs md:text-sm uppercase tracking-widest border-2 border-[#1A1A1A] shadow-[4px_4px_0px_#1A1A1A] active:translate-y-1 active:shadow-none transition-all"
+            >
+              Instalar Ahora
+            </button>
+          ) : (
+            <div className="text-[10px] md:text-xs font-bold text-orange-200 border border-orange-200/30 px-4 py-2 rounded-xl bg-orange-200/10 italic text-center sm:text-left">
+              Para instalar: Toca el botón <strong>"Compartir"</strong> o los <strong>tres puntos ⋮</strong> y busca <strong>"Añadir a pantalla de inicio"</strong>.
+            </div>
+          )}
         </div>
       )}
 
