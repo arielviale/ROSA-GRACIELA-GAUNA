@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { HashRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
 import {
@@ -131,18 +130,27 @@ const App: React.FC = () => {
   const alarmTriggeredRef = useRef(false);
 
   useEffect(() => {
-    // Detect if already installed or in standalone mode
     if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
       setIsInstalled(true);
     }
 
-    const handleAppInstalled = () => {
-      setIsInstalled(true);
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
     };
 
+    const handleAppInstalled = () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+    };
+
+    window.addEventListener('beforeinstallprompt', handler);
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    return () => window.removeEventListener('appinstalled', handleAppInstalled);
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('appinstalled', handleAppInstalled);
+    };
   }, []);
 
   const handleInstallClick = async () => {
@@ -279,8 +287,6 @@ const App: React.FC = () => {
             <NavItem to="/report" icon={<FileText />} label="Mi Reporte" />
             <NavItem to="/settings" icon={<UserIcon />} label="Mi Perfil" />
           </nav>
-
-
 
           {ritualState === RitualState.TAKEN && (
             <div className="mx-4 mb-4 p-5 bg-[#FF7043] border-2 border-[#1A1A1A] rounded-[2rem] text-white shadow-xl animate-in zoom-in duration-500">

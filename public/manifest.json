@@ -2,7 +2,7 @@
   "name": "Hipotiroidismo Consciente",
   "short_name": "H. Consciente",
   "description": "Tu ritual diario para el manejo del hipotiroidismo y bienestar tiroideo.",
-  "start_url": ".",
+  "start_url": "/?source=pwa",
   "display": "standalone",
   "background_color": "#FFFBF2",
   "theme_color": "#FF7043",
@@ -14,19 +14,19 @@
   ],
   "icons": [
     {
-      "src": "logo192.png",
+      "src": "/logo192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logo192.png",
+      "src": "/logo192.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "logo192.png",
+      "src": "/logo192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
@@ -35,20 +35,20 @@
   "shortcuts": [
     {
       "name": "Alimentación",
-      "url": "/alimentacion",
+      "url": "/#/tips",
       "icons": [
         {
-          "src": "logo192.png",
+          "src": "/logo192.png",
           "sizes": "192x192"
         }
       ]
     },
     {
       "name": "Seguimiento",
-      "url": "/seguimiento",
+      "url": "/#/analysis",
       "icons": [
         {
-          "src": "logo192.png",
+          "src": "/logo192.png",
           "sizes": "192x192"
         }
       ]
