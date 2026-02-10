@@ -264,7 +264,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-[#FFFBF2] pb-20 md:pb-0 md:pl-64 animate-in fade-in duration-500 font-['Outfit']">
-        <PWAInstall />
+        <PWAInstall deferredPrompt={deferredPrompt} onInstall={handleInstallClick} />
         {showWelcome ? (
           <Welcome onComplete={handleWelcomeComplete} />
         ) : (
