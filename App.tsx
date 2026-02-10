@@ -261,76 +261,80 @@ const App: React.FC = () => {
 
   const updateProfile = (updatedProfile: UserProfile) => { setProfile(updatedProfile); };
 
-  if (showWelcome) { return <Welcome onComplete={handleWelcomeComplete} />; }
-
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-[#FFFBF2] pb-20 md:pb-0 md:pl-64 animate-in fade-in duration-500 font-['Outfit']">
         <PWAInstall />
-        <aside className="hidden md:flex flex-col w-64 bg-white border-r border-[#1A1A1A]/10 h-screen fixed left-0 top-0 z-20 shadow-sm">
-          <div className="p-8 text-center">
-            <div className="flex flex-col items-center gap-4 mb-8">
-              <div className="p-1 bg-white rounded-full shadow-lg border-2 border-[#1A1A1A] transform hover:scale-105 transition-transform duration-500 cursor-pointer">
-                <ThyroidFriendLogo size={80} isRunning={ritualState === RitualState.TAKEN} />
+        {showWelcome ? (
+          <Welcome onComplete={handleWelcomeComplete} />
+        ) : (
+          <>
+            <aside className="hidden md:flex flex-col w-64 bg-white border-r border-[#1A1A1A]/10 h-screen fixed left-0 top-0 z-20 shadow-sm">
+              <div className="p-8 text-center">
+                <div className="flex flex-col items-center gap-4 mb-8">
+                  <div className="p-1 bg-white rounded-full shadow-lg border-2 border-[#1A1A1A] transform hover:scale-105 transition-transform duration-500 cursor-pointer">
+                    <ThyroidFriendLogo size={80} isRunning={ritualState === RitualState.TAKEN} />
+                  </div>
+                  <div className="space-y-0.5">
+                    <h1 className="text-[10px] font-black text-[#FF7043] uppercase tracking-tighter leading-none">Hipotiroidismo</h1>
+                    <h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest text-center">Consciente</h2>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-0.5">
-                <h1 className="text-[10px] font-black text-[#FF7043] uppercase tracking-tighter leading-none">Hipotiroidismo</h1>
-                <h2 className="text-xs font-bold text-slate-800 uppercase tracking-widest text-center">Consciente</h2>
+              <nav className="flex-1 px-4 space-y-1 overflow-y-auto pb-4">
+                <NavItem to="/" icon={<Home />} label="Mi Ritual" />
+                <NavItem to="/history" icon={<Calendar />} label="Mi Diario" />
+                <NavItem to="/analysis" icon={<ChartIcon />} label="Peso y Dosis" />
+                <NavItem to="/tips" icon={<Lightbulb />} label="Vida Consciente" />
+                <NavItem to="/report" icon={<FileText />} label="Mi Reporte" />
+                <NavItem to="/settings" icon={<UserIcon />} label="Mi Perfil" />
+              </nav>
+
+              {ritualState === RitualState.TAKEN && (
+                <div className="mx-4 mb-4 p-5 bg-[#FF7043] border-2 border-[#1A1A1A] rounded-[2rem] text-white shadow-xl animate-in zoom-in duration-500">
+                  <div className="flex items-center gap-3 mb-2">
+                    <Zap size={14} className="animate-pulse" />
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Absorbiendo Energía</p>
+                  </div>
+                  <p className="text-3xl font-black tabular-nums">
+                    {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+                  </p>
+                </div>
+              )}
+            </aside>
+
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t-2 border-[#1A1A1A]/10 flex justify-around py-3 px-2 z-50 pb-safe">
+              <MobileNavItem to="/" icon={<Home />} />
+              <MobileNavItem to="/history" icon={<Calendar />} />
+              <MobileNavItem to="/analysis" icon={<ChartIcon />} />
+              <MobileNavItem to="/report" icon={<FileText />} />
+              <MobileNavItem to="/settings" icon={<UserIcon />} />
+            </nav>
+
+            <header className="md:hidden bg-white/80 backdrop-blur-md px-5 py-4 border-b-2 border-[#1A1A1A]/10 flex justify-between items-center sticky top-0 z-40 pt-safe">
+              <div className="flex items-center gap-3">
+                <ThyroidFriendLogo size={44} isRunning={ritualState === RitualState.TAKEN} />
+                <h1 className="text-xs font-black text-[#FF7043] uppercase tracking-tighter">H. Consciente</h1>
               </div>
-            </div>
-          </div>
-          <nav className="flex-1 px-4 space-y-1 overflow-y-auto pb-4">
-            <NavItem to="/" icon={<Home />} label="Mi Ritual" />
-            <NavItem to="/history" icon={<Calendar />} label="Mi Diario" />
-            <NavItem to="/analysis" icon={<ChartIcon />} label="Peso y Dosis" />
-            <NavItem to="/tips" icon={<Lightbulb />} label="Vida Consciente" />
-            <NavItem to="/report" icon={<FileText />} label="Mi Reporte" />
-            <NavItem to="/settings" icon={<UserIcon />} label="Mi Perfil" />
-          </nav>
+              {ritualState === RitualState.TAKEN && (
+                <div className="bg-[#FF7043] border-2 border-[#1A1A1A] text-white px-4 py-1.5 rounded-full text-sm font-black tabular-nums shadow-lg">
+                  {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+                </div>
+              )}
+            </header>
 
-          {ritualState === RitualState.TAKEN && (
-            <div className="mx-4 mb-4 p-5 bg-[#FF7043] border-2 border-[#1A1A1A] rounded-[2rem] text-white shadow-xl animate-in zoom-in duration-500">
-              <div className="flex items-center gap-3 mb-2">
-                <Zap size={14} className="animate-pulse" />
-                <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Absorbiendo Energía</p>
-              </div>
-              <p className="text-3xl font-black tabular-nums">
-                {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
-              </p>
-            </div>
-          )}
-        </aside>
-
-        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t-2 border-[#1A1A1A]/10 flex justify-around py-3 px-2 z-50 pb-safe">
-          <MobileNavItem to="/" icon={<Home />} />
-          <MobileNavItem to="/history" icon={<Calendar />} />
-          <MobileNavItem to="/analysis" icon={<ChartIcon />} />
-          <MobileNavItem to="/report" icon={<FileText />} />
-          <MobileNavItem to="/settings" icon={<UserIcon />} />
-        </nav>
-
-        <header className="md:hidden bg-white/80 backdrop-blur-md px-5 py-4 border-b-2 border-[#1A1A1A]/10 flex justify-between items-center sticky top-0 z-40 pt-safe">
-          <div className="flex items-center gap-3">
-            <ThyroidFriendLogo size={44} isRunning={ritualState === RitualState.TAKEN} />
-            <h1 className="text-xs font-black text-[#FF7043] uppercase tracking-tighter">H. Consciente</h1>
-          </div>
-          {ritualState === RitualState.TAKEN && (
-            <div className="bg-[#FF7043] border-2 border-[#1A1A1A] text-white px-4 py-1.5 rounded-full text-sm font-black tabular-nums shadow-lg">
-              {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
-            </div>
-          )}
-        </header>
-
-        <main className="flex-1 p-4 md:p-10 max-w-5xl mx-auto w-full">
-          <Routes>
-            <Route path="/" element={<Dashboard profile={profile} onSymptomAdd={addSymptomEntry} ritualState={ritualState} timeLeft={timeLeft} onTakePill={handleTakePill} onResetRitual={handleResetRitual} deferredPrompt={deferredPrompt} onInstallRequest={handleInstallClick} isInstalled={isInstalled} />} />
-            <Route path="/history" element={<History symptoms={symptomHistory} />} />
-            <Route path="/analysis" element={<WeightAnalysis weightHistory={weightHistory} currentProfile={profile} onUpdateWeight={updateWeight} />} />
-            <Route path="/tips" element={<Tips symptoms={symptomHistory} isInstalled={isInstalled} />} />
-            <Route path="/report" element={<MedicalReport profile={profile} symptoms={symptomHistory} weights={weightHistory} />} />
-            <Route path="/settings" element={<Settings profile={profile} onUpdate={updateProfile} />} />
-          </Routes>
-        </main>
+            <main className="flex-1 p-4 md:p-10 max-w-5xl mx-auto w-full">
+              <Routes>
+                <Route path="/" element={<Dashboard profile={profile} onSymptomAdd={addSymptomEntry} ritualState={ritualState} timeLeft={timeLeft} onTakePill={handleTakePill} onResetRitual={handleResetRitual} deferredPrompt={deferredPrompt} onInstallRequest={handleInstallClick} isInstalled={isInstalled} />} />
+                <Route path="/history" element={<History symptoms={symptomHistory} />} />
+                <Route path="/analysis" element={<WeightAnalysis weightHistory={weightHistory} currentProfile={profile} onUpdateWeight={updateWeight} />} />
+                <Route path="/tips" element={<Tips symptoms={symptomHistory} isInstalled={isInstalled} />} />
+                <Route path="/report" element={<MedicalReport profile={profile} symptoms={symptomHistory} weights={weightHistory} />} />
+                <Route path="/settings" element={<Settings profile={profile} onUpdate={updateProfile} />} />
+              </Routes>
+            </main>
+          </>
+        )}
       </div>
     </Router>
   );
