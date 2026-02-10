@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { HashRouter as Router, Routes, Route, NavLink } from 'react-router-dom';
-import { 
-  Home, 
-  LineChart as ChartIcon, 
-  Calendar, 
-  Lightbulb, 
-  FileText, 
+import {
+  Home,
+  LineChart as ChartIcon,
+  Calendar,
+  Lightbulb,
+  FileText,
   User as UserIcon,
   Zap,
   Smartphone,
@@ -19,19 +19,20 @@ import Tips from './components/Tips';
 import MedicalReport from './components/MedicalReport';
 import Welcome from './components/Welcome';
 import Settings from './components/Settings';
+import PWAInstall from './components/PWAInstall';
 import { UserProfile, SymptomEntry, WeightEntry, RitualState } from './types';
 
-export const ThyroidFriendLogo: React.FC<{ className?: string; size?: number; isRunning?: boolean }> = ({ 
-  className = "", 
+export const ThyroidFriendLogo: React.FC<{ className?: string; size?: number; isRunning?: boolean }> = ({
+  className = "",
   size = 100,
   isRunning = false
 }) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 100 100" 
-    fill="none" 
-    xmlns="http://www.w3.org/2000/svg" 
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 100 100"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
     className={`${className}`}
   >
     <style>
@@ -62,10 +63,10 @@ export const ThyroidFriendLogo: React.FC<{ className?: string; size?: number; is
     <ellipse cx="50" cy="85" rx="20" ry="3" fill="#E5E5E5" />
     <path className="leg" d="M42 78L38 86" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round" />
     <path className="leg" style={{ animationDelay: '0.15s' }} d="M58 78L62 86" stroke="#1A1A1A" strokeWidth="2.5" strokeLinecap="round" />
-    <path 
-      d="M32 75C24 75 18 65 22 48C26 30 44 34 50 44C56 34 74 30 78 48C82 65 76 75 68 75C60 75 56 68 50 68C44 68 40 75 32 75Z" 
-      fill="#FF7043" 
-      stroke="#1A1A1A" 
+    <path
+      d="M32 75C24 75 18 65 22 48C26 30 44 34 50 44C56 34 74 30 78 48C82 65 76 75 68 75C60 75 56 68 50 68C44 68 40 75 32 75Z"
+      fill="#FF7043"
+      stroke="#1A1A1A"
       strokeWidth="2.5"
     />
     <circle cx="28" cy="55" r="2" fill="#E64A19" opacity="0.6" />
@@ -95,7 +96,7 @@ const App: React.FC = () => {
   const [showWelcome, setShowWelcome] = useState<boolean>(() => !localStorage.getItem('hc_welcome_seen'));
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState<boolean>(false);
-  
+
   const [profile, setProfile] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('hc_profile');
     return saved ? JSON.parse(saved) : { name: '', weight: 70, currentDose: 100 };
@@ -135,17 +136,13 @@ const App: React.FC = () => {
       setIsInstalled(true);
     }
 
-    const handler = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    window.addEventListener('appinstalled', () => {
+    const handleAppInstalled = () => {
       setIsInstalled(true);
-      setDeferredPrompt(null);
-    });
-    
-    return () => window.removeEventListener('beforeinstallprompt', handler);
+    };
+
+    window.addEventListener('appinstalled', handleAppInstalled);
+
+    return () => window.removeEventListener('appinstalled', handleAppInstalled);
   }, []);
 
   const handleInstallClick = async () => {
@@ -179,7 +176,7 @@ const App: React.FC = () => {
         osc.stop(ctx.currentTime + start + duration);
       };
       [523.25, 659.25, 783.99].forEach((freq, i) => playTone(freq, i * 0.2, 0.6));
-    } catch (e) {}
+    } catch (e) { }
   }, []);
 
   useEffect(() => {
@@ -190,7 +187,7 @@ const App: React.FC = () => {
         const elapsedSeconds = Math.floor((now - ritualStartTime) / 1000);
         const totalSeconds = customWaitMinutes * 60;
         const remaining = totalSeconds - elapsedSeconds;
-        
+
         if (remaining <= 0) {
           setRitualState(RitualState.READY_TO_EAT);
           localStorage.setItem('hc_ritual_state', RitualState.READY_TO_EAT);
@@ -261,6 +258,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="flex flex-col min-h-screen bg-[#FFFBF2] pb-20 md:pb-0 md:pl-64 animate-in fade-in duration-500 font-['Outfit']">
+        <PWAInstall />
         <aside className="hidden md:flex flex-col w-64 bg-white border-r border-[#1A1A1A]/10 h-screen fixed left-0 top-0 z-20 shadow-sm">
           <div className="p-8 text-center">
             <div className="flex flex-col items-center gap-4 mb-8">
@@ -281,27 +279,18 @@ const App: React.FC = () => {
             <NavItem to="/report" icon={<FileText />} label="Mi Reporte" />
             <NavItem to="/settings" icon={<UserIcon />} label="Mi Perfil" />
           </nav>
-          
-          {deferredPrompt && !isInstalled && (
-            <div className="px-4 mb-4">
-              <button 
-                onClick={handleInstallClick}
-                className="w-full flex items-center justify-center gap-3 p-4 bg-slate-900 text-white rounded-[1.5rem] text-xs font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-[4px_4px_0px_#FF7043]"
-              >
-                <Smartphone size={16} /> Instalar App
-              </button>
-            </div>
-          )}
+
+
 
           {ritualState === RitualState.TAKEN && (
             <div className="mx-4 mb-4 p-5 bg-[#FF7043] border-2 border-[#1A1A1A] rounded-[2rem] text-white shadow-xl animate-in zoom-in duration-500">
-               <div className="flex items-center gap-3 mb-2">
-                 <Zap size={14} className="animate-pulse" />
-                 <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Absorbiendo Energía</p>
-               </div>
-               <p className="text-3xl font-black tabular-nums">
-                 {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
-               </p>
+              <div className="flex items-center gap-3 mb-2">
+                <Zap size={14} className="animate-pulse" />
+                <p className="text-[10px] font-black uppercase tracking-widest opacity-80">Absorbiendo Energía</p>
+              </div>
+              <p className="text-3xl font-black tabular-nums">
+                {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+              </p>
             </div>
           )}
         </aside>
@@ -315,15 +304,15 @@ const App: React.FC = () => {
         </nav>
 
         <header className="md:hidden bg-white/80 backdrop-blur-md px-5 py-4 border-b-2 border-[#1A1A1A]/10 flex justify-between items-center sticky top-0 z-40 pt-safe">
-           <div className="flex items-center gap-3">
-             <ThyroidFriendLogo size={44} isRunning={ritualState === RitualState.TAKEN} />
-             <h1 className="text-xs font-black text-[#FF7043] uppercase tracking-tighter">H. Consciente</h1>
-           </div>
-           {ritualState === RitualState.TAKEN && (
-             <div className="bg-[#FF7043] border-2 border-[#1A1A1A] text-white px-4 py-1.5 rounded-full text-sm font-black tabular-nums shadow-lg">
-               {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
-             </div>
-           )}
+          <div className="flex items-center gap-3">
+            <ThyroidFriendLogo size={44} isRunning={ritualState === RitualState.TAKEN} />
+            <h1 className="text-xs font-black text-[#FF7043] uppercase tracking-tighter">H. Consciente</h1>
+          </div>
+          {ritualState === RitualState.TAKEN && (
+            <div className="bg-[#FF7043] border-2 border-[#1A1A1A] text-white px-4 py-1.5 rounded-full text-sm font-black tabular-nums shadow-lg">
+              {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}
+            </div>
+          )}
         </header>
 
         <main className="flex-1 p-4 md:p-10 max-w-5xl mx-auto w-full">
